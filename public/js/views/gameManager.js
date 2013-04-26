@@ -5,8 +5,7 @@ define([
     'tmpl!templates/cred',
     'tmpl!templates/game',
     'tmpl!templates/set',
-    'views/animate'
-
+    'game'
 ], function (
     Backbone,
     mainMenuTmpl,
@@ -14,15 +13,16 @@ define([
     credTmpl,
     gameTmpl,
     setTmpl,
-    animate
+    game
 ) {
     return Backbone.View.extend({
 
         //capture keyboard input
-        // initialize: function () {
+        initialize: function () {
         //     _.bindAll(this, 'keyInput');
         //     $(document).bind('keydown', this.keyInput);
-        // },
+            game.init();
+        },
         scores: undefined,
 
         events: {
@@ -32,13 +32,11 @@ define([
             'click .exit': 'exit',
             'click .set': 'settings',
             'click .back': 'back'
-
         },
 
         startGame: function(){
             this.$el.html(gameTmpl());
-            animate.init();
-            animate.start();
+            game.start();
         },
 
         highScores: function(){
