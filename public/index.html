@@ -1,19 +1,20 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title></title>
-    <link rel="stylesheet" type="text/less" href="css/style.less">
-    <link href="http://fonts.googleapis.com/css?family=Faster+One" rel="stylesheet" type="text/css">
-    <link href="http://fonts.googleapis.com/css?family=Wendy+One" rel="stylesheet" type="text/css">
-
+    <title>Asteroids</title>
+    <link rel='stylesheet' type='text/less' href='css/style.less'>
+    <link href='http://fonts.googleapis.com/css?family=Faster+One' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Wendy+One' rel='stylesheet' type='text/css'>
 </head>
 <body>
 
-    <script src="js/lib/handlebars.js"></script>
-    <script>less = {env:'development'};</script>
-    <script src="js/lib/less.js"></script>
-    <script data-main='js/main' src="js/lib/require.js"></script>
+    <div id='game'></div>
+    <div class='wrapper'></div>
 
-    <div class = 'wrapper'> </div>
+    <script src='js/lib/three.js'></script>
+    <script src='js/lib/handlebars.js'></script>
+    <script src='js/lib/less.js'></script>
+    <script>less = {env:'development'};</script>
+    <script data-main='js/main' src='js/lib/require.js'></script>
 </body>
 </html>

@@ -5,9 +5,8 @@ define([
     'tmpl!templates/cred',
     'tmpl!templates/game',
     'tmpl!templates/set',
-    'views/animate',
-    'lib/howler'
-
+    'lib/howler',
+    'game'
 ], function (
     Backbone,
     mainMenuTmpl,
@@ -15,20 +14,22 @@ define([
     credTmpl,
     gameTmpl,
     setTmpl,
-    animate,
-    howler
+    howler,
+    game
 ) {
     return Backbone.View.extend({
 
         //capture keyboard input
-        // initialize: function () {
+        initialize: function () {
         //     _.bindAll(this, 'keyInput');
         //     $(document).bind('keydown', this.keyInput);
-        // },
-        scores: undefined,
-        sound: undefined,
-        fx: undefined,
-        music: "On",
+            game.init({});
+        },
+
+        scores:  undefined,
+        sound:   undefined,
+        fx:      undefined,
+        music:   "On",
         effects: "On",
 
         events: {
@@ -41,13 +42,12 @@ define([
             'click .music': 'toggleMusic',
             'click .effects': 'toggleFX',
             'click .button': 'makeClickSound'
-
         },
 
         startGame: function(){
             this.$el.html(gameTmpl());
-            animate.init();
-            animate.start();
+            $('#game').css('display', 'block');
+            game.start();
         },
 
         highScores: function(){
