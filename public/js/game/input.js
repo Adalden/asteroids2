@@ -33,6 +33,7 @@ define([], function () {
     up:        function () { return keys[38] || keys[87]; },
     left:      function () { return keys[37] || keys[65]; },
     right:     function () { return keys[39] || keys[68]; },
+    pause:     function () { return keys[27]; },
     fire:      fire,
     resetKeys: reset
   };

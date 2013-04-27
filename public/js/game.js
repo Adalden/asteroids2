@@ -1,9 +1,11 @@
 define([
   'game/input',
-  'game/player'
+  'game/player',
+  'tmpl!templates/inGame',
 ], function (
   inp,
-  player
+  player,
+  gSettingsTmpl
 ) {
   var WIDTH
     , HEIGHT
@@ -17,7 +19,9 @@ define([
     , asteroids = []
     , bullets   = [];
 
-  var score = 0;
+  var score     = 0
+    , gameFlag  = false
+    , pause     = false;
 
   function init(options) {
     WIDTH  = options.WIDTH   || 1440;
@@ -41,6 +45,8 @@ define([
 
     for (var i = 0; i < NUM_ASTEROIDS; ++i)
       addAsteroid('models/asteroid.js', 'models/asteroid.jpg');
+
+    gameFlag = true;
   }
 
   function addAsteroid(_model, meshTexture, cb) {
@@ -143,11 +149,19 @@ define([
   }
 
   function animate() {
-    requestAnimationFrame(animate);
-    updateAsteroids();
-    updateBullets();
-    updatePlayer();
-    render();
+    if(gameFlag){
+      requestAnimationFrame(animate);
+      if(!pause){
+        updateAsteroids();
+        updateBullets();
+        updatePlayer();
+        render();
+      }
+    }
+  }
+
+  function stop(){
+    gameFlag = false;
   }
 
   function updateBullets() {
@@ -234,6 +248,10 @@ define([
   }
 
   function updatePlayer() {
+    if(inp.pause()){
+      pause = true;
+      showOptions();
+    }
     if (inp.up()) {
       player.accelerate();
     }
@@ -303,8 +321,20 @@ define([
     renderer.render(scene, camera);
   }
 
+  function resume(){
+    pause = false;
+  }
+
+  function showOptions(){
+    $('#game').css('opacity', '.2');
+    $('.ingameOptions').html(gSettingsTmpl());
+    $('.ingameOptions').css({display: 'block', opacity: '1'});
+  }
+
   return {
     init:  init,
-    start: animate
+    start: animate,
+    stop: stop,
+    resume: resume
   };
 });

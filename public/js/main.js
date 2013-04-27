@@ -23,7 +23,7 @@ require.config({
 
 require([
     'jquery',
-    'views/gameManager'
+    'views/gameManager',
 ], function (
     $,
     mainMenu

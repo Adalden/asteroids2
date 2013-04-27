@@ -5,6 +5,8 @@ define([
     'tmpl!templates/cred',
     'tmpl!templates/game',
     'tmpl!templates/set',
+    'tmpl!templates/gSound',
+    'tmpl!templates/inGame',
     'lib/howler',
     'game'
 ], function (
@@ -14,6 +16,8 @@ define([
     credTmpl,
     gameTmpl,
     setTmpl,
+    gSoundTmpl,
+    gSettingsTmpl,
     howler,
     game
 ) {
@@ -21,8 +25,6 @@ define([
 
         //capture keyboard input
         initialize: function () {
-        //     _.bindAll(this, 'keyInput');
-        //     $(document).bind('keydown', this.keyInput);
             game.init({});
         },
 
@@ -46,7 +48,11 @@ define([
             'click .music': 'toggleMusic',
             'click .effects': 'toggleFX',
             'click .button': 'makeClickSound',
-            'click .controls': 'changeInput'
+            'click .controls': 'changeInput',
+            'click .gBack': 'gameBack',
+            'click .gSounds': 'gameSound',
+            'click .resume': 'resumeGame',
+            'click .sBack': 'settingsBack'
         },
 
         startGame: function(){
@@ -182,6 +188,27 @@ define([
                 thisControlSet[2] = newKey;
             if(thisControl == 'f')
                 thisControlSet[3] = newKey;
+        },
+
+        gameBack: function(){
+            game.stop();
+            $('#game').css('display', 'none');
+            $('.ingameOptions').css('display', 'none');
+            this.$el.html(mainMenuTmpl());
+        },
+
+        gameSound: function(){
+            $('.ingameOptions').html(gSoundTmpl({music: this.music, effects: this.effects}));
+        },
+
+        resumeGame: function(){
+            $('.ingameOptions').css('display', 'none');
+            $('#game').css('opacity', '1');
+            game.resume();
+        },
+
+        settingsBack: function(){
+            $('.ingameOptions').html(gSettingsTmpl());
         },
 
         render: function () {
