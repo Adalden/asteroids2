@@ -5,32 +5,21 @@ define([
   inp,
   player
 ) {
-  return Backbone.View.extend({
-
-
-
-  });
-});
-
+  var WIDTH
+    , HEIGHT
+    , NUM_ASTEROIDS = 8
+    , DEBUG = false;
 
 var renderer
   , camera
   , scene
   , ship
-  , meshes = [];
+  , asteroids = [];
 
-var inp    = require('./input')
-  , player = require('./player');
-
-var DEBUG = false;
-
-exports.init = initialize;
-exports.start = animate;
-
-function initialize() {
+function init(options) {
   // set the scene size
-  var WIDTH  = 1440
-    , HEIGHT = 700;
+  WIDTH  = options.WIDTH   || 1440;
+  HEIGHT = options.HEIGHTH || 700;
 
   // set some camera attributes
   var VIEW_ANGLE = 45
@@ -40,7 +29,7 @@ function initialize() {
 
   // get the DOM element to attach to
   // - assume we've got jQuery to hand
-  var $container = $('#test');
+  var $container = $('#game');
 
   // create a WebGL renderer, camera
   // and a scene
@@ -58,8 +47,8 @@ function initialize() {
   // attach the render-supplied DOM element
   $container.append(renderer.domElement);
 
-  for (var i = 0; i < 8; ++i) {
-    addModel('models/asteroid.js', 'models/asteroid.jpg', addBoundingSphere);
+  for (var i = 0; i < NUM_ASTEROIDS; ++i) {
+    addAsteroid('models/asteroid.js', 'models/asteroid.jpg', addBoundingSphere);
   }
 
   addShip('models/ship.js');
@@ -76,47 +65,49 @@ function initialize() {
   scene.add(pointLight);
 }
 
-function addModel(_model, meshTexture, cb) {
+function addAsteroid(_model, meshTexture, cb) {
   cb = cb || function () {};
   var material = undefined;
   if (meshTexture)
     material = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture(meshTexture) });
   var loader = new THREE.JSONLoader(false);
   loader.load(_model, function (geometry, materials) {
-    var mesh = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
+    var mesh  = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
     var mesh2 = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
     var mesh3 = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
     var mesh4 = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
+
     mesh.position.z = 0;
-    mesh.position.x = (Math.random() - .5) * 1440;
-    mesh.position.y = (Math.random() - .5) * 700;
+    mesh.position.x = (Math.random() - .5) * WIDTH;
+    mesh.position.y = (Math.random() - .5) * HEIGHT;
     mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
     mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 60;
 
     mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
-    mesh2.scale = mesh3.scale = mesh4.scale = mesh.scale;
+    mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
 
     // mesh.geometry.boundingSphere.radius -= .2;
 
     // while (collidesTEST(mesh)) {
-    //   mesh.position.x = (Math.random() - .5) * 1440;
-    //   mesh.position.y = (Math.random() - .5) * 700;
+    //   mesh.position.x = (Math.random() - .5) * WIDTH;
+    //   mesh.position.y = (Math.random() - .5) * HEIGHT;
     // }
-    mesh.matrixAutoUpdate = false;
-    mesh.updateMatrix();
+
+    // mesh.matrixAutoUpdate = false;
+    // mesh.updateMatrix();
     scene.add(mesh);
     scene.add(mesh2);
     scene.add(mesh3);
     scene.add(mesh4);
-    meshes.push(createAsteroid(mesh, mesh2, mesh3, mesh4));
-    cb(mesh);
+    asteroids.push(createAsteroid(mesh, mesh2, mesh3, mesh4));
+    // cb(mesh);
   });
 }
 
 function addShip(_model){
   var loader = new THREE.JSONLoader(false);
   loader.load(_model, function (geometry, materials) {
-    var mesh = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
     var mesh2 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
     var mesh3 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
     var mesh4 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
@@ -129,40 +120,40 @@ function addShip(_model){
     mesh.rotation.x = 90;
 
     mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
-    mesh2.scale = mesh3.scale = mesh4.scale = mesh.scale;
+    mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
 
-    mesh.matrixAutoUpdate = false;
-    mesh.updateMatrix();
+    // mesh.matrixAutoUpdate = false;
+    // mesh.updateMatrix();
     scene.add(mesh);
     scene.add(mesh2);
     scene.add(mesh3);
     scene.add(mesh4);
     ship = mesh;
 
-    player.setShip(ship, mesh2, mesh3, mesh4);
+    player.init({
+      meshes: [ship, mesh2, mesh3, mesh4]
+    });
   });
-
-
 }
 
-function collidesTEST(mesh) {
-  var m2 = mesh.position;
-  var dist2 = mesh.geometry.boundingSphere.radius * mesh.scale.x;
+// function collidesTEST(mesh) {
+//   var m2 = mesh.position;
+//   var dist2 = mesh.geometry.boundingSphere.radius * mesh.scale.x;
 
-  for (var i = 0; i < meshes.length; ++i) {
+//   for (var i = 0; i < meshes.length; ++i) {
 
-    var m1 = meshes[i].mesh.position;
-    var d = Math.sqrt(Math.pow(m1.x - m2.x, 2) + Math.pow(m1.y - m2.y, 2) + Math.pow(m1.z - m2.z, 2));
+//     var m1 = meshes[i].mesh.position;
+//     var d = Math.sqrt(Math.pow(m1.x - m2.x, 2) + Math.pow(m1.y - m2.y, 2) + Math.pow(m1.z - m2.z, 2));
 
-    var dist = dist2 + meshes[i].mesh.geometry.boundingSphere.radius * meshes[i].mesh.scale.x;
-    if (d <= dist) {
-    // if (d <= 40) {
-      return true;
-    }
-  }
+//     var dist = dist2 + meshes[i].mesh.geometry.boundingSphere.radius * meshes[i].mesh.scale.x;
+//     if (d <= dist) {
+//     // if (d <= 40) {
+//       return true;
+//     }
+//   }
 
-  return false;
-}
+//   return false;
+// }
 
 function addBoundingSphere(mesh) {
   if (!DEBUG) return;
@@ -186,11 +177,11 @@ function createAsteroid(mesh, mesh2, mesh3, mesh4) {
   var SPEED = 3;
 
   return {
-    rotX: (Math.random() - .5) / 50,
-    rotY: (Math.random() - .5) / 50,
-    dx: (Math.random() - .5) * SPEED,
-    dy: (Math.random() - .5) * SPEED,
-    mesh: mesh,
+    rotX:  (Math.random() - .5) / 50,
+    rotY:  (Math.random() - .5) / 50,
+    dx:    (Math.random() - .5) * SPEED,
+    dy:    (Math.random() - .5) * SPEED,
+    mesh:  mesh,
     mesh2: mesh2,
     mesh3: mesh3,
     mesh4: mesh4
@@ -205,34 +196,27 @@ function animate() {
 }
 
 function updatePlayer() {
-  if (!ship) return;
+  // if (!ship) return;
 
   if (inp.up()) {
-    player.moveUp();
-  }
-
-  if (inp.down()) {
-    player.moveDown();
+    player.accelerate();
   }
 
   if (inp.left()) {
-    player.moveLeft();
+    player.turnLeft();
   }
 
   if (inp.right()) {
-    player.moveRight();
+    player.turnRight();
   }
 
   player.update();
-  ship.updateMatrix();
+  // ship.updateMatrix();
 }
 
 function updateAsteroids() {
-  var WIDTH  = 1440;
-  var HEIGHT = 700;
-
-  for (var i = 0; i < meshes.length; ++i) {
-    var a = meshes[i];
+  for (var i = 0; i < asteroids.length; ++i) {
+    var a = asteroids[i];
 
     var oldX = a.mesh.position.x;
     var oldY = a.mesh.position.y;
@@ -312,34 +296,45 @@ function render() {
   renderer.render(scene, camera);
 }
 
-function checkCollisions(j) {
-  var m2 = meshes[j].mesh.position;
-  var dist2 = meshes[j].mesh.geometry.boundingSphere.radius * meshes[j].mesh.scale.x;
+// function checkCollisions(j) {
+//   var m2 = meshes[j].mesh.position;
+//   var dist2 = meshes[j].mesh.geometry.boundingSphere.radius * meshes[j].mesh.scale.x;
 
-  for (var i = 0; i < meshes.length; ++i) {
-    if (i === j) continue;
+//   for (var i = 0; i < meshes.length; ++i) {
+//     if (i === j) continue;
 
-    var m1 = meshes[i].mesh.position;
-    var d = Math.sqrt(Math.pow(m1.x - m2.x, 2) + Math.pow(m1.y - m2.y, 2) + Math.pow(m1.z - m2.z, 2));
+//     var m1 = meshes[i].mesh.position;
+//     var d = Math.sqrt(Math.pow(m1.x - m2.x, 2) + Math.pow(m1.y - m2.y, 2) + Math.pow(m1.z - m2.z, 2));
 
-    var dist = dist2 + meshes[i].mesh.geometry.boundingSphere.radius * meshes[i].mesh.scale.x;
-    // if (j == 0)
-    //   console.log(d, dist);
+//     var dist = dist2 + meshes[i].mesh.geometry.boundingSphere.radius * meshes[i].mesh.scale.x;
+//     // if (j == 0)
+//     //   console.log(d, dist);
 
-    if (d <= dist) {
-    // if (d <= 40) {
-      var tempX = meshes[i].dx;
-      var tempY = meshes[i].dy;
+//     if (d <= dist) {
+//     // if (d <= 40) {
+//       var tempX = meshes[i].dx;
+//       var tempY = meshes[i].dy;
 
-      meshes[i].dx = meshes[j].dx;
-      meshes[i].dy = meshes[j].dy;
+//       meshes[i].dx = meshes[j].dx;
+//       meshes[i].dy = meshes[j].dy;
 
-      meshes[j].dx = tempX;
-      meshes[j].dy = tempY;
+//       meshes[j].dx = tempX;
+//       meshes[j].dy = tempY;
 
-      return true;
-    }
-  }
+//       return true;
+//     }
+//   }
 
-  return false;
-}
+//   return false;
+// }
+
+
+
+
+
+
+  return {
+    init:  init,
+    start: animate
+  };
+});

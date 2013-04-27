@@ -21,7 +21,7 @@ define([
         initialize: function () {
         //     _.bindAll(this, 'keyInput');
         //     $(document).bind('keydown', this.keyInput);
-            game.init();
+            game.init({});
         },
         scores: undefined,
 
@@ -36,6 +36,7 @@ define([
 
         startGame: function(){
             this.$el.html(gameTmpl());
+            $('#game').css('display', 'block');
             game.start();
         },
 
