@@ -23,7 +23,7 @@
 	"colorDiffuse" : [0.021961, 0.021961, 0.021961],
 	"colorSpecular" : [0.064706, 0.064706, 0.064706],
 	"illumination" : 2,
-	"mapDiffuse" : "Pottery_clay_5.jpg",
+	"mapDiffuse" : "Pottery_clay.jpg",
 	"opticalDensity" : 1.0,
 	"specularCoef" : 0.0,
 	"transparency" : 1.0
@@ -37,7 +37,7 @@
 	"colorDiffuse" : [0.690196, 0.693334, 0.724706],
 	"colorSpecular" : [0.5, 0.5, 0.5],
 	"illumination" : 2,
-	"mapDiffuse" : "White_porcelain2_4.jpg",
+	"mapDiffuse" : "White_porcelain2.jpg",
 	"opticalDensity" : 1.0,
 	"specularCoef" : 160.784314,
 	"transparency" : 1.0
@@ -51,7 +51,7 @@
 	"colorDiffuse" : [0.8, 0.040784, 0.040784],
 	"colorSpecular" : [0.5, 0.02549, 0.02549],
 	"illumination" : 2,
-	"mapDiffuse" : "BLAST_RED1_12.jpg",
+	"mapDiffuse" : "BLAST_RED1.jpg",
 	"opticalDensity" : 1.0,
 	"specularCoef" : 0.0,
 	"transparency" : 1.0
@@ -65,7 +65,7 @@
 	"colorDiffuse" : [0.724706, 0.307451, 0.12549],
 	"colorSpecular" : [0.237255, 0.42549, 0.5],
 	"illumination" : 2,
-	"mapDiffuse" : "Metallic_Varnish_1.jpg",
+	"mapDiffuse" : "Metallic_Varnish.jpg",
 	"opticalDensity" : 1.0,
 	"specularCoef" : 3.921569,
 	"transparency" : 1.0
@@ -79,7 +79,7 @@
 	"colorDiffuse" : [0.112941, 0.112941, 0.112941],
 	"colorSpecular" : [0.264706, 0.264706, 0.264706],
 	"illumination" : 2,
-	"mapDiffuse" : "GREY_DARK_10.jpg",
+	"mapDiffuse" : "GREY_DARK.jpg",
 	"opticalDensity" : 1.0,
 	"specularCoef" : 0.0,
 	"transparency" : 1.0
@@ -93,7 +93,7 @@
 	"colorDiffuse" : [0.0, 0.0, 0.8],
 	"colorSpecular" : [0.5, 0.5, 0.5],
 	"illumination" : 2,
-	"mapDiffuse" : "Blue_glass_11.jpg",
+	"mapDiffuse" : "Blue_glass.jpg",
 	"opticalDensity" : 1.0,
 	"specularCoef" : 31.372549,
 	"transparency" : 1.0
@@ -107,7 +107,7 @@
 	"colorDiffuse" : [0.8, 0.040784, 0.040784],
 	"colorSpecular" : [0.5, 0.02549, 0.02549],
 	"illumination" : 2,
-	"mapDiffuse" : "BLAST_RED0_9.jpg",
+	"mapDiffuse" : "BLAST_RED0.jpg",
 	"opticalDensity" : 1.0,
 	"specularCoef" : 0.0,
 	"transparency" : 1.0
@@ -121,7 +121,7 @@
 	"colorDiffuse" : [0.8, 0.8, 0.8],
 	"colorSpecular" : [0.5, 0.5, 0.5],
 	"illumination" : 2,
-	"mapDiffuse" : "Flat_white_8.jpg",
+	"mapDiffuse" : "Flat_white.jpg",
 	"opticalDensity" : 1.0,
 	"specularCoef" : 5.882353,
 	"transparency" : 1.0
@@ -149,7 +149,7 @@
 	"colorDiffuse" : [0.081569, 0.081569, 0.081569],
 	"colorSpecular" : [0.050981, 0.050981, 0.050981],
 	"illumination" : 2,
-	"mapDiffuse" : "GRAY_6.jpg",
+	"mapDiffuse" : "GRAY.jpg",
 	"opticalDensity" : 1.0,
 	"specularCoef" : 5.882353,
 	"transparency" : 1.0
@@ -163,7 +163,7 @@
 	"colorDiffuse" : [0.690196, 0.693334, 0.724706],
 	"colorSpecular" : [0.5, 0.5, 0.5],
 	"illumination" : 2,
-	"mapDiffuse" : "White_porcelain1_3.jpg",
+	"mapDiffuse" : "White_porcelain1.jpg",
 	"opticalDensity" : 1.0,
 	"specularCoef" : 160.784314,
 	"transparency" : 1.0
@@ -177,7 +177,7 @@
 	"colorDiffuse" : [0.690196, 0.693334, 0.724706],
 	"colorSpecular" : [0.5, 0.5, 0.5],
 	"illumination" : 2,
-	"mapDiffuse" : "White_porcelain0_2.jpg",
+	"mapDiffuse" : "White_porcelain0.jpg",
 	"opticalDensity" : 1.0,
 	"specularCoef" : 160.784314,
 	"transparency" : 1.0
@@ -191,7 +191,7 @@
 	"colorDiffuse" : [0.690196, 0.693334, 0.724706],
 	"colorSpecular" : [0.5, 0.5, 0.5],
 	"illumination" : 2,
-	"mapDiffuse" : "White_porcelain3_7.jpg",
+	"mapDiffuse" : "White_porcelain3.jpg",
 	"opticalDensity" : 1.0,
 	"specularCoef" : 160.784314,
 	"transparency" : 1.0

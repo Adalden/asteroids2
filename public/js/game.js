@@ -1,10 +1,12 @@
 define([
   'game/input',
   'game/player',
+  'game/enemy',
   'tmpl!templates/inGame',
 ], function (
   inp,
   player,
+  player2,
   gSettingsTmpl
 ) {
   var WIDTH
@@ -16,6 +18,7 @@ define([
     , camera
     , scene
     , ship
+    , enemy
     , asteroids = []
     , bullets   = [];
 
@@ -42,6 +45,7 @@ define([
 
     scene.add(camera);
     addShip('models/ship.js');
+    addEnemy('models/enemy.js');
 
     for (var i = 0; i < NUM_ASTEROIDS; ++i)
       addAsteroid('models/asteroid.js', 'models/asteroid.jpg');
@@ -113,6 +117,37 @@ define([
     });
   }
 
+  function addEnemy(_model){
+    var loader = new THREE.JSONLoader(false);
+    loader.load(_model, function (geometry, materials) {
+      var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+      var mesh2 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+      var mesh3 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+      var mesh4 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+
+      mesh.position.x = mesh.position.y = mesh.position.z = 0;
+      mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
+      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
+
+      mesh.position.z = -100;
+      mesh.rotation.x = 90;
+
+      mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
+      mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
+
+      scene.add(mesh);
+      scene.add(mesh2);
+      scene.add(mesh3);
+      scene.add(mesh4);
+      enemy = mesh;
+      player2.init({
+        meshes:           [enemy, mesh2, mesh3, mesh4],
+        updateFourMeshes: updateFourMeshes,
+        addBullet:        addBullet
+      });
+    });
+  }
+
   function addBullet(x, y, rot) {
     var loader = new THREE.JSONLoader(false);
     loader.load('models/bullet.js', function (geometry, materials) {
@@ -155,6 +190,7 @@ define([
         updateAsteroids();
         updateBullets();
         updatePlayer();
+        updateEnemy();
         render();
       }
     }
@@ -269,6 +305,26 @@ define([
     }
 
     player.update();
+  }
+
+  function updateEnemy() {
+    if (inp.up()) {
+      player2.accelerate();
+    }
+
+    if (inp.left()) {
+      player2.turnRight();
+    }
+
+    if (inp.right()) {
+      player2.turnLeft();
+    }
+
+    if (inp.fire()) {
+      player2.fire();
+    }
+
+    player2.update();
   }
 
   function updateAsteroids() {
