@@ -17,6 +17,8 @@ define([
     , asteroids = []
     , bullets   = [];
 
+  var score = 0;
+
   function init(options) {
     WIDTH  = options.WIDTH   || 1440;
     HEIGHT = options.HEIGHTH || 700;
@@ -107,14 +109,15 @@ define([
 
   function addBullet(x, y, rot) {
     var loader = new THREE.JSONLoader(false);
-    loader.load('models/asteroid.js', function (geometry, materials) {
+    loader.load('models/bullet.js', function (geometry, materials) {
       var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
 
       mesh.position.x = x + Math.sin(rot) * 40;
       mesh.position.y = y - Math.cos(rot) * 40;
       mesh.position.z = 0;
       mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
-      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 10;
+      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
+      mesh.rotation.z = rot + Math.PI;
 
       scene.add(mesh);
 
@@ -163,6 +166,7 @@ define([
           isCollision = true;
           scene.remove(bullets[i].mesh);
           bullets.splice(i--, 1);
+          updateScore(asteroids[j].meshes[0].scale.x);
           hitAsteroid(asteroids[j], j);
         }
       }
@@ -214,6 +218,19 @@ define([
     var d = Math.sqrt(Math.pow(m1.x - m2.x, 2) + Math.pow(m1.y - m2.y, 2) + Math.pow(m1.z - m2.z, 2));
 
     return d <= dist;
+  }
+
+  function updateScore(size){
+    if(size == 120)
+      score += 10;
+    if(size == 90)
+      score += 20;
+    if(size == 60)
+      score += 30;
+    if(size == 30)
+      score += 50;
+
+    $('.score').html("Score: " + score);
   }
 
   function updatePlayer() {
