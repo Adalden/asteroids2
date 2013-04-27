@@ -39,7 +39,7 @@ define([
         ctrlChange: undefined,
 
         events: {
-            'click .game': 'startGame',
+            'click .game': 'showOptions',
             'click .hs': 'highScores',
             'click .cred': 'credits',
             'click .exit': 'exit',
@@ -52,13 +52,20 @@ define([
             'click .gBack': 'gameBack',
             'click .gSounds': 'gameSound',
             'click .resume': 'resumeGame',
-            'click .sBack': 'settingsBack'
+            'click .sBack': 'settingsBack',
+            'click .pCount': 'startGame'
         },
 
-        startGame: function(){
+        startGame: function(e){
+            var option = parseInt(e.target.className.split(' ')[1]);
             this.$el.html(gameTmpl());
             $('#game').css('display', 'block');
-            game.start();
+            game.start(option, this.p1Controls, this.p2Controls);
+        },
+
+        showOptions: function(){
+            $('.menuWrapper').css('opacity', '.3');
+            $('.playerCount').css('display', 'block');
         },
 
         highScores: function(){
