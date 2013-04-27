@@ -4,16 +4,20 @@ define([], function () {
 
   $(document).keydown(function (e) {
     keys[e.keyCode] = true;
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    return false;
+    if (e.keyCode === 32 || e.keyCode === 37 || e.keyCode === 38 || e.keyCode === 39) {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      return false;
+    }
   });
 
   $(document).keyup(function (e) {
     keys[e.keyCode] = false;
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    return false;
+    if (e.keyCode === 32 || e.keyCode === 37 || e.keyCode === 38 || e.keyCode === 39) {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      return false;
+    }
   });
 
   function fire () {
