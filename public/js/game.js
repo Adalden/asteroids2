@@ -7,331 +7,284 @@ define([
 ) {
   var WIDTH
     , HEIGHT
-    , NUM_ASTEROIDS = 8
-    , DEBUG = false;
+    , NUM_ASTEROIDS = 2
+    , BULLET_SPEED = 15;
 
-var renderer
-  , camera
-  , scene
-  , ship
-  , asteroids = [];
+  var renderer
+    , camera
+    , scene
+    , ship
+    , asteroids = []
+    , bullets   = [];
 
-function init(options) {
-  // set the scene size
-  WIDTH  = options.WIDTH   || 1440;
-  HEIGHT = options.HEIGHTH || 700;
+  function init(options) {
+    WIDTH  = options.WIDTH   || 1440;
+    HEIGHT = options.HEIGHTH || 700;
 
-  // set some camera attributes
-  var VIEW_ANGLE = 45
-    , ASPECT     = WIDTH / HEIGHT
-    , NEAR       = 0.1
-    , FAR        = 10000;
+    var VIEW_ANGLE = 45
+      , ASPECT     = WIDTH / HEIGHT
+      , NEAR       = 0.1
+      , FAR        = 10000;
 
-  // get the DOM element to attach to
-  // - assume we've got jQuery to hand
-  var $container = $('#game');
+    var $container = $('#game');
+    renderer = new THREE.WebGLRenderer();
+    camera   = new THREE.OrthographicCamera(WIDTH / 2, -WIDTH / 2, HEIGHT / 2, -HEIGHT / 2, HEIGHT / 2, NEAR, FAR);
+    scene    = new THREE.Scene();
 
-  // create a WebGL renderer, camera
-  // and a scene
-  renderer = new THREE.WebGLRenderer();
-//  camera   = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-  camera   = new THREE.OrthographicCamera(WIDTH / 2, -WIDTH / 2, HEIGHT / 2, -HEIGHT / 2, HEIGHT / 2, NEAR, FAR);
-  scene    = new THREE.Scene();
+    renderer.setSize(WIDTH, HEIGHT);
+    $container.append(renderer.domElement);
 
-  // add the camera to the scene
-  scene.add(camera);
+    scene.add(camera);
+    addShip('models/ship.js');
 
-  // start the renderer
-  renderer.setSize(WIDTH, HEIGHT);
-
-  // attach the render-supplied DOM element
-  $container.append(renderer.domElement);
-
-  for (var i = 0; i < NUM_ASTEROIDS; ++i) {
-    addAsteroid('models/asteroid.js', 'models/asteroid.jpg', addBoundingSphere);
+    for (var i = 0; i < NUM_ASTEROIDS; ++i)
+      addAsteroid('models/asteroid.js', 'models/asteroid.jpg');
   }
 
-  addShip('models/ship.js');
+  function addAsteroid(_model, meshTexture, cb) {
+    cb = cb || function () {};
+    var material = undefined;
+    if (meshTexture) material = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture(meshTexture) });
+    var loader = new THREE.JSONLoader(false);
+    loader.load(_model, function (geometry, materials) {
+      var mesh  = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
+      var mesh2 = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
+      var mesh3 = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
+      var mesh4 = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
 
-  // create a point light
-  var pointLight = new THREE.PointLight(0xFFFFFF);
+      mesh.position.z = 0;
+      mesh.position.x = (Math.random() - .5) * WIDTH;
+      mesh.position.y = (Math.random() - .5) * HEIGHT;
+      mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
+      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 120;
 
-  // set its position
-  pointLight.position.x = 10;
-  pointLight.position.y = 50;
-  pointLight.position.z = 130;
+      mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
+      mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
 
-  // add to the scene
-  scene.add(pointLight);
-}
+      mesh.geometry.boundingSphere.radius -= .2;
 
-function addAsteroid(_model, meshTexture, cb) {
-  cb = cb || function () {};
-  var material = undefined;
-  if (meshTexture)
-    material = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture(meshTexture) });
-  var loader = new THREE.JSONLoader(false);
-  loader.load(_model, function (geometry, materials) {
-    var mesh  = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
-    var mesh2 = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
-    var mesh3 = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
-    var mesh4 = new THREE.Mesh(geometry, material); // new THREE.MeshFaceMaterial(materials)
-
-    mesh.position.z = 0;
-    mesh.position.x = (Math.random() - .5) * WIDTH;
-    mesh.position.y = (Math.random() - .5) * HEIGHT;
-    mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
-    mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 60;
-
-    mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
-    mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
-
-    // mesh.geometry.boundingSphere.radius -= .2;
-
-    // while (collidesTEST(mesh)) {
-    //   mesh.position.x = (Math.random() - .5) * WIDTH;
-    //   mesh.position.y = (Math.random() - .5) * HEIGHT;
-    // }
-
-    // mesh.matrixAutoUpdate = false;
-    // mesh.updateMatrix();
-    scene.add(mesh);
-    scene.add(mesh2);
-    scene.add(mesh3);
-    scene.add(mesh4);
-    asteroids.push(createAsteroid(mesh, mesh2, mesh3, mesh4));
-    // cb(mesh);
-  });
-}
-
-function addShip(_model){
-  var loader = new THREE.JSONLoader(false);
-  loader.load(_model, function (geometry, materials) {
-    var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh2 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh3 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh4 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
-
-    mesh.position.x = mesh.position.y = mesh.position.z = 0;
-    mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
-    mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
-
-    mesh.position.z = -100;
-    mesh.rotation.x = 90;
-
-    mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
-    mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
-
-    // mesh.matrixAutoUpdate = false;
-    // mesh.updateMatrix();
-    scene.add(mesh);
-    scene.add(mesh2);
-    scene.add(mesh3);
-    scene.add(mesh4);
-    ship = mesh;
-
-    player.init({
-      meshes: [ship, mesh2, mesh3, mesh4]
+      scene.add(mesh);
+      scene.add(mesh2);
+      scene.add(mesh3);
+      scene.add(mesh4);
+      var myAsteroid = createAsteroid([mesh, mesh2, mesh3, mesh4]);
+      asteroids.push(myAsteroid);
+      cb(myAsteroid);
     });
-  });
-}
-
-// function collidesTEST(mesh) {
-//   var m2 = mesh.position;
-//   var dist2 = mesh.geometry.boundingSphere.radius * mesh.scale.x;
-
-//   for (var i = 0; i < meshes.length; ++i) {
-
-//     var m1 = meshes[i].mesh.position;
-//     var d = Math.sqrt(Math.pow(m1.x - m2.x, 2) + Math.pow(m1.y - m2.y, 2) + Math.pow(m1.z - m2.z, 2));
-
-//     var dist = dist2 + meshes[i].mesh.geometry.boundingSphere.radius * meshes[i].mesh.scale.x;
-//     if (d <= dist) {
-//     // if (d <= 40) {
-//       return true;
-//     }
-//   }
-
-//   return false;
-// }
-
-function addBoundingSphere(mesh) {
-  if (!DEBUG) return;
-
-  var radius   = mesh.geometry.boundingSphere.radius
-    , segments = 16
-    , rings    = 16;
-
-  var sphere = new THREE.Mesh(
-    new THREE.SphereGeometry(radius, segments, rings)
-    // new THREE.MeshLambertMaterial({ color: 0xCC0000 })
-  );
-
-  sphere.scale = mesh.scale;
-  sphere.position = mesh.position;
-
-  scene.add(sphere);
-}
-
-function createAsteroid(mesh, mesh2, mesh3, mesh4) {
-  var SPEED = 3;
-
-  return {
-    rotX:  (Math.random() - .5) / 50,
-    rotY:  (Math.random() - .5) / 50,
-    dx:    (Math.random() - .5) * SPEED,
-    dy:    (Math.random() - .5) * SPEED,
-    mesh:  mesh,
-    mesh2: mesh2,
-    mesh3: mesh3,
-    mesh4: mesh4
-  };
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-  updateAsteroids();
-  updatePlayer();
-  render();
-}
-
-function updatePlayer() {
-  // if (!ship) return;
-
-  if (inp.up()) {
-    player.accelerate();
   }
 
-  if (inp.left()) {
-    player.turnLeft();
+  function addShip(_model){
+    var loader = new THREE.JSONLoader(false);
+    loader.load(_model, function (geometry, materials) {
+      var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+      var mesh2 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+      var mesh3 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+      var mesh4 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+
+      mesh.position.x = mesh.position.y = mesh.position.z = 0;
+      mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
+      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
+
+      mesh.position.z = -100;
+      mesh.rotation.x = 90;
+
+      mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
+      mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
+
+      scene.add(mesh);
+      scene.add(mesh2);
+      scene.add(mesh3);
+      scene.add(mesh4);
+      ship = mesh;
+
+      player.init({
+        meshes:           [ship, mesh2, mesh3, mesh4],
+        updateFourMeshes: updateFourMeshes,
+        addBullet:        addBullet
+      });
+    });
   }
 
-  if (inp.right()) {
-    player.turnRight();
+  function addBullet(x, y, rot) {
+    var loader = new THREE.JSONLoader(false);
+    loader.load('models/asteroid.js', function (geometry, materials) {
+      var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+
+      mesh.position.x = x + Math.sin(rot) * 40;
+      mesh.position.y = y - Math.cos(rot) * 40;
+      mesh.position.z = 0;
+      mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
+      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 10;
+
+      scene.add(mesh);
+
+      bullets.push({
+        dx:    Math.sin(rot) * BULLET_SPEED,
+        dy:    Math.cos(rot) * BULLET_SPEED,
+        life:  1000,
+        mesh:  mesh
+      });
+    });
   }
 
-  player.update();
-  // ship.updateMatrix();
-}
+  function createAsteroid(meshes) {
+    var SPEED = 3;
 
-function updateAsteroids() {
-  for (var i = 0; i < asteroids.length; ++i) {
-    var a = asteroids[i];
-
-    var oldX = a.mesh.position.x;
-    var oldY = a.mesh.position.y;
-
-    a.mesh.position.x += a.dx;
-    a.mesh.position.y += a.dy;
-
-    // if (checkCollisions(i)) {
-    //   a.mesh.position.x = oldX;
-    //   a.mesh.position.y = oldY;
-    // }
-
-    if (a.mesh.position.x > WIDTH / 2) {
-      a.mesh.position.x -= WIDTH;
-      // a.mesh.position.x = WIDTH / 2;
-      // a.dx *= -1;
-    }
-
-    if (a.mesh.position.x < -WIDTH / 2) {
-      a.mesh.position.x += WIDTH;
-      // a.mesh.position.x = -WIDTH / 2;
-      // a.dx *= -1;
-    }
-
-    if (a.mesh.position.y > HEIGHT / 2) {
-      a.mesh.position.y -= HEIGHT;
-      // a.mesh.position.y = HEIGHT / 2;
-      // a.dy *= -1;
-    }
-
-    if (a.mesh.position.y < -HEIGHT / 2) {
-      a.mesh.position.y += HEIGHT;
-      // a.mesh.position.y = -HEIGHT / 2;
-      // a.dy *= -1;
-    }
-
-
-    a.mesh2.position.y = a.mesh.position.y;
-    a.mesh2.position.z = a.mesh.position.z;
-
-    if (a.mesh.position.x > 0)
-      a.mesh2.position.x = a.mesh.position.x - WIDTH;
-    else
-      a.mesh2.position.x = a.mesh.position.x + WIDTH;
-
-    a.mesh3.position.x = a.mesh.position.x;
-    a.mesh3.position.z = a.mesh.position.z;
-
-    if (a.mesh.position.y > 0)
-      a.mesh3.position.y = a.mesh.position.y - HEIGHT;
-    else
-      a.mesh3.position.y = a.mesh.position.y + HEIGHT;
-
-
-    a.mesh4.position.z = a.mesh.position.z;
-
-
-    if (a.mesh.position.x > 0)
-      a.mesh4.position.x = a.mesh.position.x - WIDTH;
-    else
-      a.mesh4.position.x = a.mesh.position.x + WIDTH;
-    if (a.mesh.position.y > 0)
-      a.mesh4.position.y = a.mesh.position.y - HEIGHT;
-    else
-      a.mesh4.position.y = a.mesh.position.y + HEIGHT;
-
-
-
-    a.mesh.rotation.x += a.rotX;
-    a.mesh.rotation.y += a.rotY;
-
-    a.mesh.updateMatrix();
+    return {
+      rotX:   (Math.random() - .5) / 50,
+      rotY:   (Math.random() - .5) / 50,
+      dx:     (Math.random() - .5) * SPEED,
+      dy:     (Math.random() - .5) * SPEED,
+      meshes: meshes
+    };
   }
-}
 
-function render() {
-  renderer.render(scene, camera);
-}
+  function animate() {
+    requestAnimationFrame(animate);
+    updateAsteroids();
+    updateBullets();
+    updatePlayer();
+    render();
+  }
 
-// function checkCollisions(j) {
-//   var m2 = meshes[j].mesh.position;
-//   var dist2 = meshes[j].mesh.geometry.boundingSphere.radius * meshes[j].mesh.scale.x;
+  function updateBullets() {
+    for (var i = 0; i < bullets.length; ++i) {
+      bullets[i].mesh.position.x += bullets[i].dx;
+      bullets[i].mesh.position.y -= bullets[i].dy;
 
-//   for (var i = 0; i < meshes.length; ++i) {
-//     if (i === j) continue;
+      if (bullets[i].mesh.position.x < -WIDTH / 2)  bullets[i].mesh.position.x += WIDTH;
+      if (bullets[i].mesh.position.x > WIDTH / 2)   bullets[i].mesh.position.x -= WIDTH;
+      if (bullets[i].mesh.position.y < -HEIGHT / 2) bullets[i].mesh.position.y += HEIGHT;
+      if (bullets[i].mesh.position.y > HEIGHT / 2)  bullets[i].mesh.position.y -= HEIGHT;
 
-//     var m1 = meshes[i].mesh.position;
-//     var d = Math.sqrt(Math.pow(m1.x - m2.x, 2) + Math.pow(m1.y - m2.y, 2) + Math.pow(m1.z - m2.z, 2));
+      var isCollision = false;
+      for (var j = 0; j < asteroids.length && !isCollision; ++j) {
+        if (collides(asteroids[j].meshes[0], bullets[i].mesh)) {
+          isCollision = true;
+          scene.remove(bullets[i].mesh);
+          bullets.splice(i--, 1);
+          hitAsteroid(asteroids[j], j);
+        }
+      }
+      if (isCollision) continue;
 
-//     var dist = dist2 + meshes[i].mesh.geometry.boundingSphere.radius * meshes[i].mesh.scale.x;
-//     // if (j == 0)
-//     //   console.log(d, dist);
+      bullets[i].life -= 20;
+      if (bullets[i].life < 0) {
+        scene.remove(bullets[i].mesh);
+        bullets.splice(i--, 1);
+      }
+    }
+  }
 
-//     if (d <= dist) {
-//     // if (d <= 40) {
-//       var tempX = meshes[i].dx;
-//       var tempY = meshes[i].dy;
+  function hitAsteroid(asteroid, index) {
+    var SPEED = 3;
 
-//       meshes[i].dx = meshes[j].dx;
-//       meshes[i].dy = meshes[j].dy;
+    var newScale = asteroid.meshes[0].scale.x - 30;
 
-//       meshes[j].dx = tempX;
-//       meshes[j].dy = tempY;
+    if (newScale <= 0) {
+      for (var i = 0; i < asteroid.meshes.length; ++i)
+        scene.remove(asteroid.meshes[i]);
+      asteroids.splice(index, 1)
+      return;
+    }
 
-//       return true;
-//     }
-//   }
+    asteroid.meshes[0].scale.x = asteroid.meshes[0].scale.y = asteroid.meshes[0].scale.z = newScale;
 
-//   return false;
-// }
+    var newAsteroid = addAsteroid('models/asteroid.js', 'models/asteroid.jpg', function (newAsteroid) {
+      newAsteroid.meshes[0].scale.x = newAsteroid.meshes[0].scale.y = newAsteroid.meshes[0].scale.z = newScale;
+      newAsteroid.meshes[0].position.x = asteroid.meshes[0].position.x + asteroid.dx * newScale;
+      newAsteroid.meshes[0].position.y = asteroid.meshes[0].position.y + asteroid.dy * newScale;
+      newAsteroid.meshes[0].position.z = asteroid.meshes[0].position.z;
 
+      asteroid.meshes[0].position.x -= asteroid.dx * newScale;
+      asteroid.meshes[0].position.y -= asteroid.dy * newScale;
 
+      asteroid.dx = (Math.random() - .5) * SPEED;
+      asteroid.dy = (Math.random() - .5) * SPEED;
+    });
+  }
 
+  function collides(obj1, obj2) {
+    var m2 = obj1.position;
+    var dist2 = obj1.geometry.boundingSphere.radius * obj1.scale.x;
 
+    var m1 = obj2.position;
+    var dist = dist2 + obj2.geometry.boundingSphere.radius * obj2.scale.x;
 
+    var d = Math.sqrt(Math.pow(m1.x - m2.x, 2) + Math.pow(m1.y - m2.y, 2) + Math.pow(m1.z - m2.z, 2));
+
+    return d <= dist;
+  }
+
+  function updatePlayer() {
+    if (inp.up()) {
+      player.accelerate();
+    }
+
+    if (inp.left()) {
+      player.turnLeft();
+    }
+
+    if (inp.right()) {
+      player.turnRight();
+    }
+
+    if (inp.fire()) {
+      player.fire();
+    }
+
+    player.update();
+  }
+
+  function updateAsteroids() {
+    for (var i = 0; i < asteroids.length; ++i) {
+      if (!asteroids[i].meshes[0]) continue;
+      var a = asteroids[i];
+
+      a.meshes[0].position.x += a.dx;
+      a.meshes[0].position.y += a.dy;
+
+      a.meshes[0].rotation.x += a.rotX;
+      a.meshes[0].rotation.y += a.rotY;
+
+      if (a.meshes[0].position.x > WIDTH / 2)   a.meshes[0].position.x -= WIDTH;
+      if (a.meshes[0].position.x < -WIDTH / 2)  a.meshes[0].position.x += WIDTH;
+      if (a.meshes[0].position.y > HEIGHT / 2)  a.meshes[0].position.y -= HEIGHT;
+      if (a.meshes[0].position.y < -HEIGHT / 2) a.meshes[0].position.y += HEIGHT;
+
+      updateFourMeshes(a.meshes);
+    }
+  }
+
+  function updateFourMeshes(meshes) {
+      meshes[1].position.y = meshes[0].position.y;
+      meshes[1].position.z = meshes[0].position.z;
+      if (meshes[0].position.x > 0)
+        meshes[1].position.x = meshes[0].position.x - WIDTH;
+      else
+        meshes[1].position.x = meshes[0].position.x + WIDTH;
+
+      meshes[2].position.x = meshes[0].position.x;
+      meshes[2].position.z = meshes[0].position.z;
+      if (meshes[0].position.y > 0)
+        meshes[2].position.y = meshes[0].position.y - HEIGHT;
+      else
+        meshes[2].position.y = meshes[0].position.y + HEIGHT;
+
+      meshes[3].position.z = meshes[0].position.z;
+      if (meshes[0].position.x > 0)
+        meshes[3].position.x = meshes[0].position.x - WIDTH;
+      else
+        meshes[3].position.x = meshes[0].position.x + WIDTH;
+      if (meshes[0].position.y > 0)
+        meshes[3].position.y = meshes[0].position.y - HEIGHT;
+      else
+        meshes[3].position.y = meshes[0].position.y + HEIGHT;
+  }
+
+  function render() {
+    renderer.render(scene, camera);
+  }
 
   return {
     init:  init,

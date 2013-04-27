@@ -1,11 +1,13 @@
 define([], function () {
-  var ACCELERATION_RATE = .5
-    , TURN_RATE         = 5
-    , MAX_SPEED         = 50
+  var ACCELERATION_RATE = .2
+    , TURN_RATE         = 4
+    , MAX_SPEED         = 20
     , HEIGHT
     , WIDTH;
 
-  var meshes = [];
+  var updateFourMeshes
+    , addBullet
+    , meshes = [];
 
   var velocity = {
     dx: 0,
@@ -16,6 +18,9 @@ define([], function () {
     WIDTH  = options.WIDTH  || 1440;
     HEIGHT = options.HEIGHT || 700;
     meshes = options.meshes;
+
+    updateFourMeshes = options.updateFourMeshes;
+    addBullet = options.addBullet;
   }
 
   function turnLeft() {
@@ -45,40 +50,23 @@ define([], function () {
     meshes[0].position.x += velocity.dx;
     meshes[0].position.y += velocity.dy;
 
-    if (meshes[0].position.x >= WIDTH/2)   meshes[0].position.x -= WIDTH;
-    if (meshes[0].position.x <= -WIDTH/2)  meshes[0].position.x += WIDTH;
-    if (meshes[0].position.y >= HEIGHT/2)  meshes[0].position.y -= HEIGHT;
-    if (meshes[0].position.y <= -HEIGHT/2) meshes[0].position.y += HEIGHT;
+    if (meshes[0].position.x >= WIDTH / 2)   meshes[0].position.x -= WIDTH;
+    if (meshes[0].position.x <= -WIDTH / 2)  meshes[0].position.x += WIDTH;
+    if (meshes[0].position.y >= HEIGHT / 2)  meshes[0].position.y -= HEIGHT;
+    if (meshes[0].position.y <= -HEIGHT / 2) meshes[0].position.y += HEIGHT;
 
-    meshes[1].position.y = meshes[0].position.y;
-    meshes[1].position.z = meshes[0].position.z;
-    if (meshes[0].position.x > 0)
-      meshes[1].position.x = meshes[0].position.x - WIDTH;
-    else
-      meshes[1].position.x = meshes[0].position.x + WIDTH;
+    updateFourMeshes(meshes);
+  }
 
-    meshes[2].position.x = meshes[0].position.x;
-    meshes[2].position.z = meshes[0].position.z;
-    if (meshes[0].position.y > 0)
-      meshes[2].position.y = meshes[0].position.y - HEIGHT;
-    else
-      meshes[2].position.y = meshes[0].position.y + HEIGHT;
-
-    meshes[3].position.z = meshes[0].position.z;
-    if (meshes[0].position.x > 0)
-      meshes[3].position.x = meshes[0].position.x - WIDTH;
-    else
-      meshes[3].position.x = meshes[0].position.x + WIDTH;
-    if (meshes[0].position.y > 0)
-      meshes[3].position.y = meshes[0].position.y - HEIGHT;
-    else
-      meshes[3].position.y = meshes[0].position.y + HEIGHT;
+  function fire() {
+    addBullet(meshes[0].position.x, meshes[0].position.y, meshes[0].rotation.y);
   }
 
   return {
     turnLeft:   turnLeft,
     turnRight:  turnRight,
     accelerate: accelerate,
+    fire:       fire,
     update:     update,
     init:       init
   };
