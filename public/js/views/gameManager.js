@@ -40,7 +40,7 @@ define([
             'click .back': 'back',
             'click .music': 'toggleMusic',
             'click .effects': 'toggleFX',
-            'click .button': 'click'
+            'click .button': 'makeClickSound'
 
         },
 
@@ -95,20 +95,19 @@ define([
             }
         },
 
-        click: function(){
+        makeClickSound: function(){
             if(this.effects == "On")
                 this.fx.play();
         },
 
+        bindSound: function(){
+            this.sound = new Howl({urls: ['./snd/tron.mp3'],loop: true}).play();
+            this.fx = new Howl({urls: ['./snd/click.mp3']});
+        },
+
         render: function () {
             this.$el.html(mainMenuTmpl());
-            this.sound = new Howl({
-                urls: ['./snd/tron.mp3'],
-                loop: true
-            }).play();
-            this.fx = new Howl({
-                urls: ['./snd/click.mp3']
-            });
+            this.bindSound();
             var that = this;
             $.get('/getScores', function(data){
                 that.scores = data;
