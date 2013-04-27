@@ -22,6 +22,43 @@
     }
 }
 
+.controls{
+    &:hover{
+        cursor: pointer;
+        color: #D9B31C;
+    }
+}
+
+.popup{
+    border: 3px solid black;
+    border-radius: 8px;
+    position: absolute;
+    width: 650px;
+    height: 100px;
+    background-color: #373737;
+    top: 25%;
+    left: 20%;
+    text-align: center;
+    color: #f7f307;
+    font-size: 250%;
+}
+
+.score{
+    position: absolute;
+    color: #f7f307;
+    top: 0px;
+    left: 0px;
+    font-size: 250%;
+}
+
+.lives{
+    position: absolute;
+    color: #f7f307;
+    top: 40px;
+    left: 0px;
+    font-size: 250%;
+}
+
 .title{
     font-size: 550%;
     color: #f7f307;
@@ -39,10 +76,6 @@
 body {
     background-color: #777777;
     width: 100%;
-
-    .keyInput{
-        display: inline-block;
-    }
 
     #game {
         width: 100%;
