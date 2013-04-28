@@ -126,7 +126,8 @@ define([
     player.init({
       meshes:           [ship, mesh2, mesh3, mesh4],
       updateFourMeshes: shared.updateFourMeshes,
-      addBullet:        addBullet
+      addBullet:        addBullet,
+      invincible:       false
     });
   }
 
@@ -210,8 +211,10 @@ define([
     if (inp.fire()) {
       player.fire();
     }
-
-    checkPlayerCollsion(player, ".p1");
+    if(player.getInvincible())
+      player.addTime();
+    else
+      checkPlayerCollsion(player, ".p1");
   }
 
   function updatePlayer2() {
@@ -234,15 +237,20 @@ define([
     if (inp2.fire()) {
       player2.fire();
     }
-
-    checkPlayerCollsion(player2, ".p2");
+    if(player2.getInvincible())
+      player2.addTime();
+    else
+      checkPlayerCollsion(player2, ".p2");
   }
   
   function checkPlayerCollsion(shipObj, playerStr){
     if (asteroidsManager.checkShip(shipObj.get())){
+      $('.death').css('display', 'block');
       if(playerStr == ".p1"){
-        if(p1Lives > 0)
+        if(p1Lives > 0){
+          player.setInvincible();
           --p1Lives;
+        }
         if(p1Lives <= 0){
           player1Flag = false;
           scene.remove(shipObj.get());
@@ -250,8 +258,10 @@ define([
         $('.p1.lives').html("Lives: " + p1Lives);
       }
       if(playerStr == ".p2"){
-        if(p2Lives > 0)
+        if(p2Lives > 0){
+          player2.setInvincible();
           --p2Lives;
+        }
         if(p2Lives <= 0){
           player2Flag = false;
           scene.remove(shipObj.get());
@@ -285,16 +295,21 @@ define([
     //One Player
     if(playerOption == 1){
       player2Flag = false;
+      player.setInvincible();
     }
 
     //Two Players
     if(playerOption == 2){
       addShip2();
       $('.p2').css('display', 'block');
+      player.setInvincible();
+      player2.setInvincible();
     }
 
     //Player with ally
     if(playerOption == 3){
+      player.setInvincible();
+      player2.setInvincible();
       addShip2();
     }
 
@@ -306,6 +321,7 @@ define([
       gameFlag = false;
       $('#game').css('opacity', '.1');
       $('.gameOver').css('display', 'block');
+      $('.death').css('display', 'none');
       
       var scores = asteroidsManager.getScores();
       if(hsManager.check(scores.p1)){

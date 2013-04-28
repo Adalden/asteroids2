@@ -48,6 +48,6 @@ define([], function () {
     pause:     function () { return keys[27]; },
     fire:      fire,
     resetKeys: reset,
-    set:       set
+    set:       set,
   };
 });

@@ -14,6 +14,9 @@ define([], function () {
     dy: 0
   };
 
+  var invincible = false
+  ,   timer      = 0;
+
   function init(options) {
     WIDTH  = options.WIDTH  || 1440;
     HEIGHT = options.HEIGHT || 700;
@@ -76,6 +79,19 @@ define([], function () {
     }];
   }
 
+  function addTime(){
+    timer += 10;
+    if(timer > 2000){
+      invincible = false;
+      timer = 0;
+      $('.death').css('display', 'none');
+    }
+  }
+
+  function resetPos(){
+    meshes[0].position.x = meshes[0].position.y = velocity.dx = velocity.dy = 0;
+  }
+
   return {
     turnLeft:   turnLeft,
     turnRight:  turnRight,
@@ -84,6 +100,9 @@ define([], function () {
     update:     update,
     init:       init,
     get:        get,
-    getPlayerData: getPlayerData
+    getPlayerData: getPlayerData,
+    getInvincible: function(){return invincible;},
+    setInvincible: function(){invincible = true; resetPos()},
+    addTime:    addTime
   };
 });
