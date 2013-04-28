@@ -233,14 +233,31 @@ define([
   }
 
   function showOptions(){
-    $('#game').css('opacity', '.2');
+    $('#game').css('opacity', '.1');
     $('.ingameOptions').html(gSettingsTmpl());
     $('.ingameOptions').css({display: 'block', opacity: '1'});
   }
 
+  function start(playerOption, p1Controls, p2Controls){
+    //One Player
+    if(playerOption == 1)
+
+
+    //Two Players
+    if(playerOption == 2)
+      addPlayer2();
+
+    //Player with ally
+    if(playerOption == 3){
+      //do something;
+    }
+
+    animate();
+  }
+
   return {
     init:  init,
-    start: animate,
+    start: start,
     stop: stop,
     resume: resume
   };
