@@ -38,6 +38,7 @@ define([], function () {
 
   function set(userControls){
     controls = userControls;
+    controls.push(27);
   }
 
   return {
