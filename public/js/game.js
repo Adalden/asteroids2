@@ -20,6 +20,9 @@ define([
   var WIDTH
     , HEIGHT;
 
+  var player1model
+    , player2model;
+
   var renderer
     , camera
     , scene
@@ -56,39 +59,36 @@ define([
     options.asteroidsManager = asteroidsManager;
     bulletsManager.init(options);
 
-    addShip('models/ship.js');
-    addShip2('models/enemy.js');
+    addShip();
+    addShip2();
   }
 
   function addShip(_model){
-    var loader = new THREE.JSONLoader(false);
-    loader.load(_model, function (geometry, materials) {
-      var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
-      var mesh2 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
-      var mesh3 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
-      var mesh4 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh  = new THREE.Mesh(player1model.geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh2 = new THREE.Mesh(player1model.geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh3 = new THREE.Mesh(player1model.geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh4 = new THREE.Mesh(player1model.geometry); // new THREE.MeshFaceMaterial(materials)
 
-      mesh.position.x = mesh.position.y = mesh.position.z = 0;
-      mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
-      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
+    mesh.position.x = mesh.position.y = mesh.position.z = 0;
+    mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
+    mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
 
-      mesh.position.z = -100;
-      mesh.rotation.x = 90;
+    mesh.position.z = -100;
+    mesh.rotation.x = 90;
 
-      mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
-      mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
+    mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
+    mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
 
-      scene.add(mesh);
-      scene.add(mesh2);
-      scene.add(mesh3);
-      scene.add(mesh4);
-      ship = mesh;
+    scene.add(mesh);
+    scene.add(mesh2);
+    scene.add(mesh3);
+    scene.add(mesh4);
+    ship = mesh;
 
-      player.init({
-        meshes:           [ship, mesh2, mesh3, mesh4],
-        updateFourMeshes: shared.updateFourMeshes,
-        addBullet:        addBullet
-      });
+    player.init({
+      meshes:           [ship, mesh2, mesh3, mesh4],
+      updateFourMeshes: shared.updateFourMeshes,
+      addBullet:        addBullet
     });
   }
 
@@ -97,33 +97,30 @@ define([
   }
 
   function addShip2(_model){
-    var loader = new THREE.JSONLoader(false);
-    loader.load(_model, function (geometry, materials) {
-      var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
-      var mesh2 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
-      var mesh3 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
-      var mesh4 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh  = new THREE.Mesh(player2model.geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh2 = new THREE.Mesh(player2model.geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh3 = new THREE.Mesh(player2model.geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh4 = new THREE.Mesh(player2model.geometry); // new THREE.MeshFaceMaterial(materials)
 
-      mesh.position.x = mesh.position.y = mesh.position.z = 0;
-      mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
-      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
+    mesh.position.x = mesh.position.y = mesh.position.z = 0;
+    mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
+    mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
 
-      mesh.position.z = -100;
-      mesh.rotation.x = 90;
+    mesh.position.z = -100;
+    mesh.rotation.x = 90;
 
-      mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
-      mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
+    mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
+    mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
 
-      scene.add(mesh);
-      scene.add(mesh2);
-      scene.add(mesh3);
-      scene.add(mesh4);
-      enemy = mesh;
-      player2.init({
-        meshes:           [enemy, mesh2, mesh3, mesh4],
-        updateFourMeshes: shared.updateFourMeshes,
-        addBullet:        addBullet
-      });
+    scene.add(mesh);
+    scene.add(mesh2);
+    scene.add(mesh3);
+    scene.add(mesh4);
+    enemy = mesh;
+    player2.init({
+      meshes:           [enemy, mesh2, mesh3, mesh4],
+      updateFourMeshes: shared.updateFourMeshes,
+      addBullet:        addBullet
     });
   }
 
@@ -223,10 +220,18 @@ define([
     animate();
   }
 
+  function setModels(models) {
+    player1model = models.player;
+    player2model = models.player2;
+    asteroidsManager.setModels(models);
+    bulletsManager.setModels(models);
+  }
+
   return {
-    init:  init,
-    start: start,
-    stop: stop,
-    resume: resume
+    init:      init,
+    start:     start,
+    stop:      stop,
+    setModels: setModels,
+    resume:    resume
   };
 });

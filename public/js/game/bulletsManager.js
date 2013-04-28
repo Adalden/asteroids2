@@ -9,6 +9,7 @@ define([
 
   var scene
     , asteroidsManager
+    , bulletModel
     , bullets = [];
 
   function init(options) {
@@ -42,31 +43,33 @@ define([
   }
 
   function addBullet(x, y, rot) {
-    var loader = new THREE.JSONLoader(false);
-    loader.load('models/bullet.js', function (geometry, materials) {
-      var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh  = new THREE.Mesh(bulletModel.geometry); // new THREE.MeshFaceMaterial(materials)
 
-      mesh.position.x = x + Math.sin(rot) * 40;
-      mesh.position.y = y - Math.cos(rot) * 40;
-      mesh.position.z = 0;
-      mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
-      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
-      mesh.rotation.z = rot + Math.PI;
+    mesh.position.x = x + Math.sin(rot) * 40;
+    mesh.position.y = y - Math.cos(rot) * 40;
+    mesh.position.z = 0;
+    mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
+    mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
+    mesh.rotation.z = rot + Math.PI;
 
-      scene.add(mesh);
+    scene.add(mesh);
 
-      bullets.push({
-        dx:    Math.sin(rot) * BULLET_SPEED,
-        dy:    Math.cos(rot) * BULLET_SPEED,
-        life:  1000,
-        mesh:  mesh
-      });
+    bullets.push({
+      dx:    Math.sin(rot) * BULLET_SPEED,
+      dy:    Math.cos(rot) * BULLET_SPEED,
+      life:  1000,
+      mesh:  mesh
     });
+  }
+
+  function setModels(models) {
+    bulletModel = models.bullet;
   }
 
   return {
     init: init,
     update: update,
+    setModels: setModels,
     addBullet: addBullet
   };
 });

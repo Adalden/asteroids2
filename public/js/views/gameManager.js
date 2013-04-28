@@ -25,6 +25,9 @@ define([
 
         //capture keyboard input
         initialize: function () {
+        },
+
+        initGame: function () {
             game.init({});
         },
 
@@ -72,6 +75,10 @@ define([
             this.$el.html(hsTmpl(this.scores));
         },
 
+        setModels: function (models) {
+            game.setModels(models);
+        },
+
         settings: function(){
             this.$el.html(setTmpl({music:this.music, effects:this.effects}));
             var classArray = ['.u', '.l', '.r', '.f'];
@@ -81,7 +88,7 @@ define([
                     $('.p1'+classArray[n]).html(this.fromChar(this.p1Controls[n]));
                 else
                     $('.p1'+classArray[n]).html(String.fromCharCode(this.p1Controls[n]));
-            
+
                 //p2Controls
                 if(this.p2Controls[n] >= 37 && this.p2Controls[n] <= 40 || this.p2Controls[n] == 20)
                     $('.p2'+classArray[n]).html(this.fromChar(this.p2Controls[n]));
@@ -219,6 +226,7 @@ define([
         },
 
         render: function () {
+            console.log('render happened');
             this.$el.html(mainMenuTmpl());
             this.bindSound();
             var that = this;

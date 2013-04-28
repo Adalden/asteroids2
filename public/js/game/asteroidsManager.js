@@ -8,6 +8,8 @@ define([
     , SPEED         = 3
     , NUM_ASTEROIDS = 2;
 
+  var asteroidModel;
+
   var score
     , scene
     , asteroids = [];
@@ -25,34 +27,29 @@ define([
   }
 
   function createAsteroid(x, y, scale) {
-    var material = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/asteroid.jpg') });
-    var loader   = new THREE.JSONLoader(false);
+    var mesh  = new THREE.Mesh(asteroidModel.geometry, asteroidModel.material);
+    var mesh2 = new THREE.Mesh(asteroidModel.geometry, asteroidModel.material);
+    var mesh3 = new THREE.Mesh(asteroidModel.geometry, asteroidModel.material);
+    var mesh4 = new THREE.Mesh(asteroidModel.geometry, asteroidModel.material);
 
-    loader.load('models/asteroid.js', function (geometry, materials) {
-      var mesh  = new THREE.Mesh(geometry, material);
-      var mesh2 = new THREE.Mesh(geometry, material);
-      var mesh3 = new THREE.Mesh(geometry, material);
-      var mesh4 = new THREE.Mesh(geometry, material);
+    mesh.position.x = x !== undefined ? x : (Math.random() - .5) * WIDTH;
+    mesh.position.y = y !== undefined ? y : (Math.random() - .5) * HEIGHT;
+    mesh.position.z = 0;
 
-      mesh.position.x = x !== undefined ? x : (Math.random() - .5) * WIDTH;
-      mesh.position.y = y !== undefined ? y : (Math.random() - .5) * HEIGHT;
-      mesh.position.z = 0;
+    mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
+    mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = scale !== undefined ? scale : 120;
 
-      mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
-      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = scale !== undefined ? scale : 120;
+    mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
+    mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
 
-      mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
-      mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
+    mesh.geometry.boundingSphere.radius -= .2;
 
-      mesh.geometry.boundingSphere.radius -= .2;
+    scene.add(mesh);
+    scene.add(mesh2);
+    scene.add(mesh3);
+    scene.add(mesh4);
 
-      scene.add(mesh);
-      scene.add(mesh2);
-      scene.add(mesh3);
-      scene.add(mesh4);
-
-      asteroids.push(makeAsteroidObject([mesh, mesh2, mesh3, mesh4]));
-    });
+    asteroids.push(makeAsteroidObject([mesh, mesh2, mesh3, mesh4]));
   }
 
   function makeAsteroidObject(meshes) {
@@ -123,9 +120,14 @@ define([
     createAsteroid(asteroids[i].meshes[0].position.x, asteroids[i].meshes[0].position.y, newScale);
   }
 
+  function setModels(models) {
+    asteroidModel = models.asteroid;
+  }
+
   return {
-    init: init,
-    update: update,
+    init:        init,
+    update:      update,
+    setModels:   setModels,
     checkBullet: checkBullet
   };
 });
