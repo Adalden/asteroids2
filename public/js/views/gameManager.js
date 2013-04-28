@@ -38,8 +38,9 @@ define([
         effects: "On",
         p1Controls: [38, 37, 39, 32],
         p2Controls: [87, 65, 68, 70],
-        arrows: ['Uarrow', 'Larrow', 'Rarrow', 'Darrow'],
+        arrows: ['Uarrow', 'Larrow', 'Rarrow', 'Darrow', 'Space'],
         ctrlChange: undefined,
+        resetGame: undefined,
 
         events: {
             'click .game': 'showOptions',
@@ -60,6 +61,12 @@ define([
         },
 
         startGame: function(e){
+            if(this.resetGame){
+                console.log("test");
+                this.initGame();
+                this.resetGame = false;
+                game.resume();
+            }
             var option = parseInt(e.target.className.split(' ')[1]);
             this.$el.html(gameTmpl());
             $('#game').css('display', 'block');
@@ -84,13 +91,13 @@ define([
             var classArray = ['.u', '.l', '.r', '.f'];
             for(var n = 0; n < this.p1Controls.length; ++n){
                 //p1Controls
-                if(this.p1Controls[n] >= 37 && this.p1Controls[n] <= 40 || this.p1Controls[n] == 20)
+                if(this.p1Controls[n] >= 37 && this.p1Controls[n] <= 40 || this.p1Controls[n] == 32)
                     $('.p1'+classArray[n]).html(this.fromChar(this.p1Controls[n]));
                 else
                     $('.p1'+classArray[n]).html(String.fromCharCode(this.p1Controls[n]));
 
                 //p2Controls
-                if(this.p2Controls[n] >= 37 && this.p2Controls[n] <= 40 || this.p2Controls[n] == 20)
+                if(this.p2Controls[n] >= 37 && this.p2Controls[n] <= 40 || this.p2Controls[n] == 32)
                     $('.p2'+classArray[n]).html(this.fromChar(this.p2Controls[n]));
                 else
                     $('.p2'+classArray[n]).html(String.fromCharCode(this.p2Controls[n]));
@@ -156,7 +163,7 @@ define([
                 return "Rarrow";
             if(code == 40)
                 return "Barrow";
-            if(code == 20)
+            if(code == 32)
                 return "Space";
 
             return "Unknown Key";
@@ -205,10 +212,7 @@ define([
         },
 
         gameBack: function(){
-            game.stop();
-            $('#game').css('display', 'none');
-            $('.ingameOptions').css('display', 'none');
-            this.$el.html(mainMenuTmpl());
+            location.reload(true);
         },
 
         gameSound: function(){

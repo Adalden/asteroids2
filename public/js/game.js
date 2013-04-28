@@ -29,8 +29,9 @@ define([
     , ship
     , enemy;
 
-  var gameFlag  = false
-    , pause     = false;
+  var gameFlag    = false
+    , pause       = false
+    , player2Flag = false;
 
   function init(options) {
     WIDTH  = options.WIDTH  || 1440;
@@ -58,7 +59,6 @@ define([
     bulletsManager.init(options);
 
     addShip();
-    addShip2();
   }
 
   function addShip(_model){
@@ -130,7 +130,9 @@ define([
         bulletsManager.update();
         bulletsManager.checkCollisions(asteroidsManager);
         updatePlayer();
-        updatePlayer2();
+        if(player2Flag){
+          updatePlayer2();
+        }
         render();
       }
     }
@@ -142,7 +144,6 @@ define([
 
   function updatePlayer() {
     if(inp.pause()){
-      console.log("TEST");
       pause = true;
       showOptions();
     }
@@ -166,7 +167,7 @@ define([
   }
 
   function updatePlayer2() {
-    if(inp.pause()){
+    if(inp2.pause()){
       pause = true;
       showOptions();
     }
@@ -186,7 +187,8 @@ define([
       player2.fire();
     }
 
-    player2.update();
+    if(player2Flag)
+      player2.update();
   }
 
   function render() {
@@ -194,7 +196,10 @@ define([
   }
 
   function resume(){
-    pause = false;
+    if(pause)
+      pause = false;
+    if(gameFlag)
+      gameFlag = true;
   }
 
   function showOptions(){
@@ -207,17 +212,17 @@ define([
     inp.set(p1Controls);
     inp2.set(p2Controls);
 
-    //One Player
-    if(playerOption == 1)
-
     //Two Players
     if(playerOption == 2){
-
+      console.log("found 2");
+      player2Flag = true;
+      addShip2();
+      $('.p2').css('display', 'block');
     }
 
     //Player with ally
     if(playerOption == 3){
-
+      player2Flag = true;
     }
 
     animate();
