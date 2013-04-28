@@ -55,8 +55,6 @@ define([
 
     options.scene = scene;
     asteroidsManager.init(options);
-
-    options.asteroidsManager = asteroidsManager;
     bulletsManager.init(options);
 
     addShip();
@@ -130,6 +128,7 @@ define([
       if(!pause){
         asteroidsManager.update();
         bulletsManager.update();
+        bulletsManager.checkCollisions(asteroidsManager);
         updatePlayer();
         updatePlayer2();
         render();

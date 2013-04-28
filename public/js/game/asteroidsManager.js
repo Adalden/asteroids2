@@ -27,10 +27,10 @@ define([
   }
 
   function createAsteroid(x, y, scale) {
-    var mesh  = new THREE.Mesh(asteroidModel.geometry, asteroidModel.material);
-    var mesh2 = new THREE.Mesh(asteroidModel.geometry, asteroidModel.material);
-    var mesh3 = new THREE.Mesh(asteroidModel.geometry, asteroidModel.material);
-    var mesh4 = new THREE.Mesh(asteroidModel.geometry, asteroidModel.material);
+    var mesh  = new THREE.Mesh(asteroidModel.geometry.clone(), asteroidModel.material);
+    var mesh2 = new THREE.Mesh(asteroidModel.geometry.clone(), asteroidModel.material);
+    var mesh3 = new THREE.Mesh(asteroidModel.geometry.clone(), asteroidModel.material);
+    var mesh4 = new THREE.Mesh(asteroidModel.geometry.clone(), asteroidModel.material);
 
     mesh.position.x = x !== undefined ? x : (Math.random() - .5) * WIDTH;
     mesh.position.y = y !== undefined ? y : (Math.random() - .5) * HEIGHT;

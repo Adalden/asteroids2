@@ -8,7 +8,6 @@ define([
     , BULLET_SPEED = 15;
 
   var scene
-    , asteroidsManager
     , bulletModel
     , bullets = [];
 
@@ -17,7 +16,6 @@ define([
     HEIGHT = options.HEIGHT || 700;
 
     scene = options.scene;
-    asteroidsManager = options.asteroidsManager
   }
 
   function update() {
@@ -27,19 +25,26 @@ define([
 
       shared.checkBounds(bullets[i].mesh);
 
-      var isCollision = asteroidsManager.checkBullet(bullets[i]);
-      if (isCollision) {
-        scene.remove(bullets[i].mesh);
-        bullets.splice(i--, 1);
-        continue;
-      }
-
       bullets[i].life -= 20;
       if (bullets[i].life < 0) {
-        scene.remove(bullets[i].mesh);
-        bullets.splice(i--, 1);
+        destroyBullet(i);
+        --i;
       }
     }
+  }
+
+  function checkCollisions(asteroidsManager) {
+    for (var i = 0; i < bullets.length; ++i) {
+      if (asteroidsManager.checkBullet(bullets[i])) {
+        destroyBullet(i);
+        --i;
+      }
+    }
+  }
+
+  function destroyBullet(i) {
+    scene.remove(bullets[i].mesh);
+    bullets.splice(i, 1);
   }
 
   function addBullet(x, y, rot) {
@@ -67,9 +72,11 @@ define([
   }
 
   return {
-    init: init,
-    update: update,
-    setModels: setModels,
-    addBullet: addBullet
+    init:            init,
+    update:          update,
+    setModels:       setModels,
+    addBullet:       addBullet,
+    destroyBullet:   destroyBullet,
+    checkCollisions: checkCollisions
   };
 });
