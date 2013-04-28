@@ -1,5 +1,6 @@
 define([
   'game/input',
+  'game/input2',
   'game/player',
   'game/asteroidsManager',
   'game/shared',
@@ -7,6 +8,7 @@ define([
   'tmpl!templates/inGame'
 ], function (
   inp,
+  inp2,
   player,
   asteroidsManager,
   shared,
@@ -52,7 +54,7 @@ define([
     asteroidsManager.init(options);
 
     addShip('models/ship.js');
-    addEnemy('models/enemy.js');
+    addShip2('models/enemy.js');
   }
 
   function addShip(_model){
@@ -87,7 +89,7 @@ define([
     });
   }
 
-  function addEnemy(_model){
+  function addShip2(_model){
     var loader = new THREE.JSONLoader(false);
     loader.load(_model, function (geometry, materials) {
       var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
@@ -148,7 +150,7 @@ define([
         asteroidsManager.update();
         updateBullets();
         updatePlayer();
-        updateEnemy();
+        updatePlayer2();
         render();
       }
     }
@@ -186,14 +188,17 @@ define([
       showOptions();
     }
     if (inp.up()) {
+      console.log('up');
       player.accelerate();
     }
 
     if (inp.left()) {
+      console.log('left');
       player.turnLeft();
     }
 
     if (inp.right()) {
+      console.log('right');
       player.turnRight();
     }
 
@@ -204,20 +209,20 @@ define([
     player.update();
   }
 
-  function updateEnemy() {
-    if (inp.up()) {
+  function updatePlayer2() {
+    if (inp2.up()) {
       player2.accelerate();
     }
 
-    if (inp.left()) {
-      player2.turnRight();
-    }
-
-    if (inp.right()) {
+    if (inp2.left()) {
       player2.turnLeft();
     }
 
-    if (inp.fire()) {
+    if (inp2.right()) {
+      player2.turnRight();
+    }
+
+    if (inp2.fire()) {
       player2.fire();
     }
 
@@ -239,17 +244,21 @@ define([
   }
 
   function start(playerOption, p1Controls, p2Controls){
+    inp.set(p1Controls);
+    inp2.set(p2Controls);
+    //player2.set(p2Controls);
+
     //One Player
     if(playerOption == 1)
 
-
     //Two Players
-    if(playerOption == 2)
-      addPlayer2();
+    if(playerOption == 2){
+
+    }
 
     //Player with ally
     if(playerOption == 3){
-      //do something;
+
     }
 
     animate();
