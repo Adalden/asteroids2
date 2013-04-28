@@ -61,7 +61,6 @@ define([
     bulletsManager.init(options);
 
     addShip();
-    addShip2();
   }
 
   function addShip(_model){
@@ -198,7 +197,10 @@ define([
   }
 
   function resume(){
-    pause = false;
+    if(pause)
+      pause = false;
+    if(gameFlag)
+      gameFlag = true;
   }
 
   function showOptions(){
@@ -213,7 +215,10 @@ define([
 
     //Two Players
     if(playerOption == 2){
+      console.log("found 2");
       player2Flag = true;
+      addShip2();
+      $('.p2').css('display', 'block');
     }
 
     //Player with ally
