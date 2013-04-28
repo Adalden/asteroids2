@@ -3,6 +3,7 @@ define([
   'game/input2',
   'game/player',
   'game/asteroidsManager',
+  'game/bulletsManager',
   'game/shared',
   'game/enemy',
   'tmpl!templates/inGame'
@@ -11,20 +12,19 @@ define([
   inp2,
   player,
   asteroidsManager,
+  bulletsManager,
   shared,
   player2,
   gSettingsTmpl
 ) {
   var WIDTH
-    , HEIGHT
-    , BULLET_SPEED  = 15;
+    , HEIGHT;
 
   var renderer
     , camera
     , scene
     , ship
-    , enemy
-    , bullets   = [];
+    , enemy;
 
   var gameFlag  = false
     , pause     = false;
@@ -52,6 +52,9 @@ define([
 
     options.scene = scene;
     asteroidsManager.init(options);
+
+    options.asteroidsManager = asteroidsManager;
+    bulletsManager.init(options);
 
     addShip('models/ship.js');
     addShip2('models/enemy.js');
@@ -89,6 +92,10 @@ define([
     });
   }
 
+  function addBullet(x, y, rot) {
+    bulletsManager.addBullet(x, y, rot)
+  }
+
   function addShip2(_model){
     var loader = new THREE.JSONLoader(false);
     loader.load(_model, function (geometry, materials) {
@@ -120,35 +127,12 @@ define([
     });
   }
 
-  function addBullet(x, y, rot) {
-    var loader = new THREE.JSONLoader(false);
-    loader.load('models/bullet.js', function (geometry, materials) {
-      var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
-
-      mesh.position.x = x + Math.sin(rot) * 40;
-      mesh.position.y = y - Math.cos(rot) * 40;
-      mesh.position.z = 0;
-      mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
-      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
-      mesh.rotation.z = rot + Math.PI;
-
-      scene.add(mesh);
-
-      bullets.push({
-        dx:    Math.sin(rot) * BULLET_SPEED,
-        dy:    Math.cos(rot) * BULLET_SPEED,
-        life:  1000,
-        mesh:  mesh
-      });
-    });
-  }
-
   function animate() {
     if(gameFlag){
       requestAnimationFrame(animate);
       if(!pause){
         asteroidsManager.update();
-        updateBullets();
+        bulletsManager.update();
         updatePlayer();
         updatePlayer2();
         render();
@@ -160,45 +144,20 @@ define([
     gameFlag = false;
   }
 
-  function updateBullets() {
-    for (var i = 0; i < bullets.length; ++i) {
-      bullets[i].mesh.position.x += bullets[i].dx;
-      bullets[i].mesh.position.y -= bullets[i].dy;
-
-      shared.checkBounds(bullets[i].mesh);
-
-      var isCollision = asteroidsManager.checkBullet(bullets[i]);
-      if (isCollision) {
-        scene.remove(bullets[i].mesh);
-        bullets.splice(i--, 1);
-        continue;
-      }
-
-      bullets[i].life -= 20;
-      if (bullets[i].life < 0) {
-        scene.remove(bullets[i].mesh);
-        bullets.splice(i--, 1);
-      }
-    }
-  }
-
   function updatePlayer() {
     if(inp.pause()){
       pause = true;
       showOptions();
     }
     if (inp.up()) {
-      console.log('up');
       player.accelerate();
     }
 
     if (inp.left()) {
-      console.log('left');
       player.turnLeft();
     }
 
     if (inp.right()) {
-      console.log('right');
       player.turnRight();
     }
 
@@ -270,5 +229,4 @@ define([
     stop: stop,
     resume: resume
   };
-
 });
