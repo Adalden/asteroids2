@@ -58,6 +58,10 @@ define([
     mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
     mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
 
+    mesh2.position.x = mesh2.position.y = -1000;
+    mesh3.position.x = mesh3.position.y = -1000;
+    mesh4.position.x = mesh4.position.y = -1000;
+
     mesh.geometry.boundingSphere.radius -= .2;
 
     scene.add(mesh);
@@ -78,18 +82,17 @@ define([
     };
   }
 
-  function update() {
+  function update(data) {
     for (var i = 0; i < asteroids.length; ++i) {
-      if (!asteroids[i].meshes[0]) continue;
+      asteroids[i].meshes[0].position.x = data[i].x;
+      asteroids[i].meshes[0].position.y = data[i].y;
+      asteroids[i].meshes[0].rotation.x = data[i].rotx;
+      asteroids[i].meshes[0].rotation.y = data[i].roty;
 
-      asteroids[i].meshes[0].position.x += asteroids[i].dx;
-      asteroids[i].meshes[0].position.y += asteroids[i].dy;
-
-      asteroids[i].meshes[0].rotation.x += asteroids[i].rotX;
-      asteroids[i].meshes[0].rotation.y += asteroids[i].rotY;
-
-      shared.checkBounds(asteroids[i].meshes[0])
-      shared.updateFourMeshes(asteroids[i].meshes);
+      for (var j = 0; j < 3; ++j) {
+        asteroids[i].meshes[j + 1].position.x = data[i].meshes[j].x;
+        asteroids[i].meshes[j + 1].position.y = data[i].meshes[j].y;
+      }
     }
   }
 
@@ -164,13 +167,32 @@ define([
     return false;
   }
 
+  function getAsteroidData() {
+    var test = [];
+
+    for (var i = 0; i < asteroids.length; ++i) {
+      test.push({
+        x:     asteroids[i].meshes[0].position.x,
+        y:     asteroids[i].meshes[0].position.y,
+        rotx:  asteroids[i].meshes[0].rotation.x,
+        roty:  asteroids[i].meshes[0].rotation.y,
+        dx:    asteroids[i].dx,
+        dy:    asteroids[i].dy,
+        drotx: asteroids[i].rotX,
+        droty: asteroids[i].rotY
+      });
+    }
+
+    return test;
+  }
+
   return {
     init:        init,
     update:      update,
     setModels:   setModels,
     checkBullet: checkBullet,
-    nextLevel:   nextLevel,
     checkShip:   checkShip,
-    getScores:   function (){return{p1: p1Score, p2: p2Score};}
+    getScores:   function (){return{p1: p1Score, p2: p2Score};},
+    getAsteroidData: getAsteroidData
   };
 });

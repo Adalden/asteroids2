@@ -40,11 +40,18 @@ define([
     , p1Lives = 3
     , p2Lives = 3;
 
+  var asteroidWorker
+    , playerWorker
+    , player2Worker
+    , bulletsWorker;
+
   function init(options) {
     WIDTH  = options.WIDTH  || 1440;
     HEIGHT = options.HEIGHT || 700;
 
     shared.init(options);
+
+    createWebWorkers();
 
     var NEAR       = 0.1
       , FAR        = 10000;
@@ -59,6 +66,10 @@ define([
 
     scene.add(camera);
 
+    var light = new THREE.PointLight(0xFFFFFF, 10);
+    light.position.set(0, 0, -1000);
+    scene.add(light);
+
     gameFlag = true;
 
     options.scene = scene;
@@ -68,11 +79,33 @@ define([
     addShip();
   }
 
+  function createWebWorkers() {
+    asteroidWorker = new Worker('/js/workers/asteroid.js');
+    asteroidWorker.onmessage = function (event) {
+      asteroidsManager.update(event.data);
+    };
+
+    playerWorker = new Worker('/js/workers/asteroid.js');
+    playerWorker.onmessage = function (event) {
+      player.update(event.data[0]);
+    };
+
+    player2Worker = new Worker('/js/workers/asteroid.js');
+    player2Worker.onmessage = function (event) {
+      player2.update(event.data[0]);
+    };
+
+    bulletsWorker = new Worker('/js/workers/bullets.js');
+    bulletsWorker.onmessage = function (event) {
+      bulletsManager.update(event.data);
+    };
+  }
+
   function addShip(_model){
-    var mesh  = new THREE.Mesh(player1model.geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh2 = new THREE.Mesh(player1model.geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh3 = new THREE.Mesh(player1model.geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh4 = new THREE.Mesh(player1model.geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh  = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
+    var mesh2 = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
+    var mesh3 = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
+    var mesh4 = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
 
     mesh.position.x = mesh.position.y = mesh.position.z = 0;
     mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
@@ -102,10 +135,10 @@ define([
   }
 
   function addShip2(_model){
-    var mesh  = new THREE.Mesh(player2model.geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh2 = new THREE.Mesh(player2model.geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh3 = new THREE.Mesh(player2model.geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh4 = new THREE.Mesh(player2model.geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh  = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
+    var mesh2 = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
+    var mesh3 = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
+    var mesh4 = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
 
     mesh.position.x = mesh.position.y = mesh.position.z = 0;
     mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
@@ -133,15 +166,21 @@ define([
     if(gameFlag){
       requestAnimationFrame(animate);
       if(!pause){
-        asteroidsManager.update();
-        bulletsManager.update();
-        bulletsManager.checkCollisions(asteroidsManager);
-        if(player1Flag)
+        asteroidWorker.postMessage(asteroidsManager.getAsteroidData());
+        if(player1Flag){
           updatePlayer();
+          playerWorker.postMessage(player.getPlayerData());
+        }
         if(player2Flag){
           updatePlayer2();
+          player2Worker.postMessage(player2.getPlayerData());
         }
         isGameOver();
+        bulletsWorker.postMessage(bulletsManager.getBulletData());
+
+        setTimeout(function () {
+          bulletsManager.checkCollisions(asteroidsManager);
+        }, 10);
         render();
       }
     }
@@ -172,7 +211,6 @@ define([
       player.fire();
     }
 
-    player.update();
     checkPlayerCollsion(player, ".p1");
   }
 
@@ -196,9 +234,6 @@ define([
     if (inp2.fire()) {
       player2.fire();
     }
-
-    if(player2Flag)
-      player2.update();
 
     checkPlayerCollsion(player2, ".p2");
   }
