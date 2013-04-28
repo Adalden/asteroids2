@@ -59,7 +59,11 @@ define([], function () {
   }
 
   function fire() {
-    addBullet(meshes[0].position.x, meshes[0].position.y, meshes[0].rotation.y);
+    addBullet(meshes[0].position.x, meshes[0].position.y, meshes[0].rotation.y, 1);
+  }
+
+  function get(){
+    return meshes[0];
   }
 
   return {
@@ -68,6 +72,7 @@ define([], function () {
     accelerate: accelerate,
     fire:       fire,
     update:     update,
-    init:       init
+    init:       init,
+    get:        get
   };
 });

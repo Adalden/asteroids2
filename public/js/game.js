@@ -6,7 +6,9 @@ define([
   'game/bulletsManager',
   'game/shared',
   'game/enemy',
-  'tmpl!templates/inGame'
+  'game/highScores',
+  'tmpl!templates/inGame',
+  'tmpl!templates/gameOver'
 ], function (
   inp,
   inp2,
@@ -15,7 +17,9 @@ define([
   bulletsManager,
   shared,
   player2,
-  gSettingsTmpl
+  hsManager,
+  gSettingsTmpl,
+  gameOverTmpl
 ) {
   var WIDTH
     , HEIGHT;
@@ -31,7 +35,10 @@ define([
 
   var gameFlag    = false
     , pause       = false
-    , player2Flag = false;
+    , player1Flag = true
+    , player2Flag = true
+    , p1Lives = 3
+    , p2Lives = 3;
 
   function init(options) {
     WIDTH  = options.WIDTH  || 1440;
@@ -90,8 +97,8 @@ define([
     });
   }
 
-  function addBullet(x, y, rot) {
-    bulletsManager.addBullet(x, y, rot)
+  function addBullet(x, y, rot, playerNum) {
+    bulletsManager.addBullet(x, y, rot, playerNum);
   }
 
   function addShip2(_model){
@@ -129,10 +136,12 @@ define([
         asteroidsManager.update();
         bulletsManager.update();
         bulletsManager.checkCollisions(asteroidsManager);
-        updatePlayer();
+        if(player1Flag)
+          updatePlayer();
         if(player2Flag){
           updatePlayer2();
         }
+        isGameOver();
         render();
       }
     }
@@ -164,6 +173,7 @@ define([
     }
 
     player.update();
+    checkPlayerCollsion(player, ".p1");
   }
 
   function updatePlayer2() {
@@ -189,6 +199,31 @@ define([
 
     if(player2Flag)
       player2.update();
+
+    checkPlayerCollsion(player2, ".p2");
+  }
+  
+  function checkPlayerCollsion(shipObj, playerStr){
+    if (asteroidsManager.checkShip(shipObj.get())){
+      if(playerStr == ".p1"){
+        if(p1Lives > 0)
+          --p1Lives;
+        if(p1Lives <= 0){
+          player1Flag = false;
+          scene.remove(shipObj.get());
+        }
+        $('.p1.lives').html("Lives: " + p1Lives);
+      }
+      if(playerStr == ".p2"){
+        if(p2Lives > 0)
+          --p2Lives;
+        if(p2Lives <= 0){
+          player2Flag = false;
+          scene.remove(shipObj.get());
+        }
+        $('.p2.lives').html("Lives: " + p2Lives);
+      }
+    }
   }
 
   function render() {
@@ -211,21 +246,43 @@ define([
   function start(playerOption, p1Controls, p2Controls){
     inp.set(p1Controls);
     inp2.set(p2Controls);
+    
+    //One Player
+    if(playerOption == 1){
+      player2Flag = false;
+    }
 
     //Two Players
     if(playerOption == 2){
-      console.log("found 2");
-      player2Flag = true;
       addShip2();
       $('.p2').css('display', 'block');
     }
 
     //Player with ally
     if(playerOption == 3){
-      player2Flag = true;
+      addShip2();
     }
 
     animate();
+  }
+
+  function isGameOver(){
+    if(player1Flag == false && player2Flag == false){
+      gameFlag = false;
+      $('#game').css('opacity', '.1');
+      $('.gameOver').css('display', 'block');
+      
+      var scores = asteroidsManager.getScores();
+      if(hsManager.check(scores.p1)){
+        $('.gameOver').html(gameOverTmpl({player: "Player 1", score: scores.p1}));
+      }
+      else if(hsManager.check(scores.p2)){
+        $('.gameOver').html(gameOverTmpl({player: "Player 2", score: scores.p2}));
+      }
+      else{
+        $('.gameOver').html(gameOverTmpl({}));
+      }
+    }
   }
 
   function setModels(models) {

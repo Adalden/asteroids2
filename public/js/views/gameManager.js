@@ -8,6 +8,7 @@ define([
     'tmpl!templates/gSound',
     'tmpl!templates/inGame',
     'lib/howler',
+    'game/highScores',
     'game'
 ], function (
     Backbone,
@@ -19,6 +20,7 @@ define([
     gSoundTmpl,
     gSettingsTmpl,
     howler,
+    hsManager,
     game
 ) {
     return Backbone.View.extend({
@@ -57,7 +59,8 @@ define([
             'click .gSounds': 'gameSound',
             'click .resume': 'resumeGame',
             'click .sBack': 'settingsBack',
-            'click .pCount': 'startGame'
+            'click .pCount': 'startGame',
+            'click .saveHS': 'saveHS'
         },
 
         startGame: function(e){
@@ -229,13 +232,22 @@ define([
             $('.ingameOptions').html(gSettingsTmpl());
         },
 
+        saveHS: function(){
+            hsManager.init(this.scores);
+            var name = $('.name').val();
+            var score = parseInt($('.newHS').html());
+            hsManager.save(name, score);
+            this.scores = hsManager.get();
+            $.post('/saveScores', {scores: this.scores}, function(data){console.log(data);location.reload(true)});
+        },
+
         render: function () {
-            console.log('render happened');
             this.$el.html(mainMenuTmpl());
             this.bindSound();
             var that = this;
             $.get('/getScores', function(data){
                 that.scores = data;
+                hsManager.init(that.scores);
             });
             return this;
         }

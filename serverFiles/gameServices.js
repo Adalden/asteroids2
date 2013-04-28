@@ -10,8 +10,8 @@ var fs = require('fs');
         },
         saveScores: function(request, response, next){
             var data = request.body.scores;
-            console.log(data);
             fs.writeFile('serverData/highScores.JSON', JSON.stringify(data));
+            response.send(data);
         }
     };
 };

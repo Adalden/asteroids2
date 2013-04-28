@@ -12,16 +12,32 @@ define([
 
   var score
     , scene
-    , asteroids = [];
+    , asteroids = []
+    , level = 1
+    , p1Score = 0
+    , p2Score = 0;
 
   function init(options) {
     WIDTH  = options.WIDTH  || 1440;
     HEIGHT = options.HEIGHT || 700;
 
     scene = options.scene;
-    score = 0;
 
     for (var i = 0; i < NUM_ASTEROIDS; ++i) {
+      createAsteroid();
+    }
+  }
+
+  function nextLevel(){
+    if(level <= 12)
+      ++level;
+    
+    $('.level').html('Level: ' + level);
+    
+    if(level % 2 != 0 && level < 12)
+      ++NUM_ASTEROIDS;
+
+    for(var n = 0; n < NUM_ASTEROIDS; ++n){
       createAsteroid();
     }
   }
@@ -80,7 +96,7 @@ define([
   function checkBullet(bullet) {
     for (var i = 0; i < asteroids.length; ++i) {
       if (shared.collides(asteroids[i].meshes[0], bullet.mesh)) {
-        updateScore(asteroids[i].meshes[0].scale.x);
+        updateScore(asteroids[i].meshes[0].scale.x, bullet.playerNum);
         hitAsteroid(i);
         return true;
       }
@@ -88,7 +104,13 @@ define([
     return false;
   }
 
-  function updateScore(size) {
+  function updateScore(size, playerNum) {
+    var score;
+    if(playerNum == 1)
+      score = p1Score;
+    if(playerNum == 2)
+      score = p2Score;
+
     if (size == 120)
       score += 10;
     if (size == 90)
@@ -98,7 +120,14 @@ define([
     if (size == 30)
       score += 50;
 
-    $('.score').html("Score: " + score);
+    if(playerNum == 1){
+      $('.p1.score').html("Score: " + score);
+      p1Score = score;
+    }
+    if(playerNum == 2){
+      $('.p2.score').html("Score: " + score);
+      p2Score = score;
+    }
   }
 
   function hitAsteroid(i) {
@@ -109,6 +138,9 @@ define([
         scene.remove(asteroids[i].meshes[j]);
       }
       asteroids.splice(i, 1);
+
+      if(asteroids.length == 0)
+        nextLevel();
       return;
     }
 
@@ -124,10 +156,21 @@ define([
     asteroidModel = models.asteroid;
   }
 
+  function checkShip(shipObj){
+    for(var n = 0; n < asteroids.length; ++n){
+      if (shared.collides(asteroids[n].meshes[0], shipObj))
+        return true;
+    }
+    return false;
+  }
+
   return {
     init:        init,
     update:      update,
     setModels:   setModels,
-    checkBullet: checkBullet
+    checkBullet: checkBullet,
+    nextLevel:   nextLevel,
+    checkShip:   checkShip,
+    getScores:   function (){return{p1: p1Score, p2: p2Score};}
   };
 });
