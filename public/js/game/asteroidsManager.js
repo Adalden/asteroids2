@@ -8,7 +8,8 @@ define([
     , SPEED         = 3
     , NUM_ASTEROIDS = 2;
 
-  var scene
+  var score
+    , scene
     , asteroids = [];
 
   function init(options) {
@@ -16,6 +17,7 @@ define([
     HEIGHT = options.HEIGHT || 700;
 
     scene = options.scene;
+    score = 0;
 
     for (var i = 0; i < NUM_ASTEROIDS; ++i) {
       createAsteroid();

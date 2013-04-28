@@ -24,8 +24,7 @@ define([
     , enemy
     , bullets   = [];
 
-  var score     = 0
-    , gameFlag  = false
+  var gameFlag  = false
     , pause     = false;
 
   function init(options) {
@@ -113,7 +112,7 @@ define([
       enemy = mesh;
       player2.init({
         meshes:           [enemy, mesh2, mesh3, mesh4],
-        updateFourMeshes: updateFourMeshes,
+        updateFourMeshes: shared.updateFourMeshes,
         addBullet:        addBullet
       });
     });
