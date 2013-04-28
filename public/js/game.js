@@ -59,6 +59,10 @@ define([
 
     scene.add(camera);
 
+    var light = new THREE.PointLight(0xFFFFFF, 10);
+    light.position.set(0, 0, -1000);
+    scene.add(light);
+
     gameFlag = true;
 
     options.scene = scene;
@@ -84,14 +88,17 @@ define([
       player2.update(event.data[0]);
     };
 
-    // bulletsWorker = new Worker();
+    bulletsWorker = new Worker('/js/workers/bullets.js');
+    bulletsWorker.onmessage = function (event) {
+      bulletsManager.update(event.data);
+    };
   }
 
   function addShip(_model){
-    var mesh  = new THREE.Mesh(player1model.geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh2 = new THREE.Mesh(player1model.geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh3 = new THREE.Mesh(player1model.geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh4 = new THREE.Mesh(player1model.geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh  = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
+    var mesh2 = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
+    var mesh3 = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
+    var mesh4 = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
 
     mesh.position.x = mesh.position.y = mesh.position.z = 0;
     mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
@@ -121,10 +128,10 @@ define([
   }
 
   function addShip2(_model){
-    var mesh  = new THREE.Mesh(player2model.geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh2 = new THREE.Mesh(player2model.geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh3 = new THREE.Mesh(player2model.geometry); // new THREE.MeshFaceMaterial(materials)
-    var mesh4 = new THREE.Mesh(player2model.geometry); // new THREE.MeshFaceMaterial(materials)
+    var mesh  = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
+    var mesh2 = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
+    var mesh3 = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
+    var mesh4 = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
 
     mesh.position.x = mesh.position.y = mesh.position.z = 0;
     mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
@@ -159,8 +166,8 @@ define([
           updatePlayer2();
           player2Worker.postMessage(player2.getPlayerData());
         }
+        bulletsWorker.postMessage(bulletsManager.getBulletData());
 
-        bulletsManager.update();
         setTimeout(function () {
           bulletsManager.checkCollisions(asteroidsManager);
         }, 10);

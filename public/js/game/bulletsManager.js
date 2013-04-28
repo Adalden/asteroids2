@@ -18,18 +18,20 @@ define([
     scene = options.scene;
   }
 
-  function update() {
-    for (var i = 0; i < bullets.length; ++i) {
-      bullets[i].mesh.position.x += bullets[i].dx;
-      bullets[i].mesh.position.y -= bullets[i].dy;
+  function update(data) {
+    var toDestroy = [];
+    for (var i = 0; i < data.length; ++i) {
+      bullets[i].mesh.position.x = data[i].x;
+      bullets[i].mesh.position.y = data[i].y;
+      bullets[i].life = data[i].life;
 
-      shared.checkBounds(bullets[i].mesh);
-
-      bullets[i].life -= 20;
-      if (bullets[i].life < 0) {
-        destroyBullet(i);
-        --i;
+      if (bullets[i].life <= 0) {
+        toDestroy.push(i);
       }
+    }
+
+    for (var i = 0; i < toDestroy.length; ++i) {
+      destroyBullet(toDestroy[i]);
     }
   }
 
@@ -71,12 +73,27 @@ define([
     bulletModel = models.bullet;
   }
 
+  function getBulletData() {
+    var data = [];
+    for (var i = 0; i < bullets.length; ++i) {
+      data.push({
+        x: bullets[i].mesh.position.x,
+        y: bullets[i].mesh.position.y,
+        dx: bullets[i].dx,
+        dy: bullets[i].dy,
+        life: bullets[i].life
+      });
+    }
+    return data;
+  }
+
   return {
     init:            init,
     update:          update,
     setModels:       setModels,
     addBullet:       addBullet,
     destroyBullet:   destroyBullet,
-    checkCollisions: checkCollisions
+    checkCollisions: checkCollisions,
+    getBulletData:   getBulletData
   };
 });
