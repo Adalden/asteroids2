@@ -146,6 +146,7 @@ define([
 
   function updatePlayer() {
     if(inp.pause()){
+      console.log("TEST");
       pause = true;
       showOptions();
     }
@@ -169,6 +170,10 @@ define([
   }
 
   function updatePlayer2() {
+    if(inp.pause()){
+      pause = true;
+      showOptions();
+    }
     if (inp2.up()) {
       player2.accelerate();
     }
@@ -205,7 +210,6 @@ define([
   function start(playerOption, p1Controls, p2Controls){
     inp.set(p1Controls);
     inp2.set(p2Controls);
-    //player2.set(p2Controls);
 
     //One Player
     if(playerOption == 1)
