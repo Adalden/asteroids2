@@ -4,7 +4,7 @@
 }
 
 .button{
-    width: 150px;
+    width: 200px;
     text-align: center;
     background-color: #373737;
     color: #f7f307;
@@ -22,6 +22,34 @@
     }
 }
 
+.controls{
+    &:hover{
+        cursor: pointer;
+        color: #D9B31C;
+    }
+}
+
+.popup{
+    border: 3px solid black;
+    border-radius: 8px;
+    position: absolute;
+    width: 650px;
+    height: 100px;
+    background-color: #373737;
+    top: 25%;
+    left: 20%;
+    text-align: center;
+    color: #f7f307;
+    font-size: 250%;
+}
+
+.hud{
+    position: absolute;
+    color: #f7f307;
+    left: 0px;
+    font-size: 150%;
+}
+
 .title{
     font-size: 550%;
     color: #f7f307;
@@ -36,13 +64,20 @@
     color: #f7f307;
 }
 
+.ingameOptions{
+    border: 3px solid black;
+    border-radius: 8px;
+    position: absolute;
+    background-color: #777777;
+    width: 400px;
+    height: 200px;
+    top: 200px;
+    left: 32%;
+}
+
 body {
     background-color: #777777;
     width: 100%;
-
-    .keyInput{
-        display: inline-block;
-    }
 
     #game {
         width: 100%;

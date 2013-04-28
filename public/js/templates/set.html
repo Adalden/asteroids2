@@ -1,17 +1,40 @@
 <div class = 'title'>Settings</div>
-<div class = 'soundWrapper' style = "float: right; display: inline-block; height: 300px;">
-  <div class = 'button music'>Music {{music}}</div>
-  <div class = 'button effects'>Sound Effects {{effects}}</div>
+<div class = 'settingsWrapper'>
+<div class = 'controlWrapper' style = "height: 300px; width: 30%; float: left;">
+  <div class = 'text' style = 'clear:both; text-align: center;'>Player 1 Controls</div>
+  <div class = 'leftSide' style = 'float: left;'>
+      <div class = 'text'>Up</div>
+      <div class = 'text'>Left</div>
+      <div class = 'text'>Right</div>
+      <div class = 'text'>Fire</div>
+    </div>
+    <div class = 'rightSide' style = 'float: right;'>
+      <div class = 'text p1 u controls'>teatst</div>
+      <div class = 'text p1 l controls'></div>
+      <div class = 'text p1 r controls'></div>
+      <div class = 'text p1 f controls'></div>
+    </div>
+  </div>
+  <div class = 'controlWrapper' style = 'height: 300px; width: 30%; float: left; padding-left: 9%;'>
+      <div class = 'text' style = 'clear:both; text-align: center;'>Player 2 Controls</div>
+      <div class = 'leftSide' style = 'float: left;'>
+        <div class = 'text'>Up</div>
+        <div class = 'text'>Left</div>
+        <div class = 'text'>Right</div>
+        <div class = 'text'>Fire</div>
+      </div>
+    <div class = 'rightSide' style = 'float: right;'>
+      <div class = 'text p2 u controls'></div>
+      <div class = 'text p2 l controls'></div>
+      <div class = 'text p2 r controls'></div>
+      <div class = 'text p2 f controls'></div>
+    </div>
+  </div>
+  <div class = 'soundWrapper' style = "height: 300px; width: 30%; float: right;">
+    <div class = 'button music'>Music {{music}}</div>
+    <div class = 'button effects'>Sound Effects {{effects}}</div>
+    <div class = 'button back'>Back</div>
+  </div>
 </div>
-<div class = 'controlWrapper' style = "float: left; display: inline-block; height: 300px; width: 300px">
-  <div class = 'text' style = 'float: left;'>Up</div>
-  <div class = 'text' style = 'float: left;'>Down</div>
-  <div class = 'text' style = 'float: left;'>Left</div>
-  <div class = 'text' style = 'float: left;'>Right</div>
 
-  <div class = 'keyInput' style = 'float: right;'>TEST</div>
-  <div class = 'keyInput' style = 'float: right;'>TEST</div>
-  <div class = 'keyInput' style = 'float: right;'>TEST</div>
-  <div class = 'keyInput' style = 'float: right;'>TEST</div>
-</div>
-<div class = 'button back'>Back</div>
+<div class = 'popup' style = 'visibility: hidden; opacity: 1;'>Push new key to bind or esc to cancel</div>

@@ -81,11 +81,25 @@ define([
   function checkBullet(bullet) {
     for (var i = 0; i < asteroids.length; ++i) {
       if (shared.collides(asteroids[i].meshes[0], bullet.mesh)) {
+        updateScore(asteroids[i].meshes[0].scale.x);
         hitAsteroid(i);
         return true;
       }
     }
     return false;
+  }
+
+  function updateScore(size) {
+    if (size == 120)
+      score += 10;
+    if (size == 90)
+      score += 20;
+    if (size == 60)
+      score += 30;
+    if (size == 30)
+      score += 50;
+
+    $('.score').html("Score: " + score);
   }
 
   function hitAsteroid(i) {

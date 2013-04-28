@@ -2,12 +2,16 @@ define([
   'game/input',
   'game/player',
   'game/asteroidsManager',
-  'game/shared'
+  'game/shared',
+  'game/enemy',
+  'tmpl!templates/inGame'
 ], function (
   inp,
   player,
   asteroidsManager,
-  shared
+  shared,
+  player2,
+  gSettingsTmpl
 ) {
   var WIDTH
     , HEIGHT
@@ -17,7 +21,12 @@ define([
     , camera
     , scene
     , ship
+    , enemy
     , bullets   = [];
+
+  var score     = 0
+    , gameFlag  = false
+    , pause     = false;
 
   function init(options) {
     WIDTH  = options.WIDTH  || 1440;
@@ -38,10 +47,13 @@ define([
 
     scene.add(camera);
 
+    gameFlag = true;
+
     options.scene = scene;
     asteroidsManager.init(options);
 
     addShip('models/ship.js');
+    addEnemy('models/enemy.js');
   }
 
   function addShip(_model){
@@ -76,16 +88,48 @@ define([
     });
   }
 
+  function addEnemy(_model){
+    var loader = new THREE.JSONLoader(false);
+    loader.load(_model, function (geometry, materials) {
+      var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+      var mesh2 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+      var mesh3 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+      var mesh4 = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
+
+      mesh.position.x = mesh.position.y = mesh.position.z = 0;
+      mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
+      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
+
+      mesh.position.z = -100;
+      mesh.rotation.x = 90;
+
+      mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
+      mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
+
+      scene.add(mesh);
+      scene.add(mesh2);
+      scene.add(mesh3);
+      scene.add(mesh4);
+      enemy = mesh;
+      player2.init({
+        meshes:           [enemy, mesh2, mesh3, mesh4],
+        updateFourMeshes: updateFourMeshes,
+        addBullet:        addBullet
+      });
+    });
+  }
+
   function addBullet(x, y, rot) {
     var loader = new THREE.JSONLoader(false);
-    loader.load('models/asteroid.js', function (geometry, materials) {
+    loader.load('models/bullet.js', function (geometry, materials) {
       var mesh  = new THREE.Mesh(geometry); // new THREE.MeshFaceMaterial(materials)
 
       mesh.position.x = x + Math.sin(rot) * 40;
       mesh.position.y = y - Math.cos(rot) * 40;
       mesh.position.z = 0;
       mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
-      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 10;
+      mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
+      mesh.rotation.z = rot + Math.PI;
 
       scene.add(mesh);
 
@@ -99,11 +143,20 @@ define([
   }
 
   function animate() {
-    requestAnimationFrame(animate);
-    asteroidsManager.update();
-    updateBullets();
-    updatePlayer();
-    render();
+    if(gameFlag){
+      requestAnimationFrame(animate);
+      if(!pause){
+        asteroidsManager.update();
+        updateBullets();
+        updatePlayer();
+        updateEnemy();
+        render();
+      }
+    }
+  }
+
+  function stop(){
+    gameFlag = false;
   }
 
   function updateBullets() {
@@ -129,6 +182,10 @@ define([
   }
 
   function updatePlayer() {
+    if(inp.pause()){
+      pause = true;
+      showOptions();
+    }
     if (inp.up()) {
       player.accelerate();
     }
@@ -148,13 +205,45 @@ define([
     player.update();
   }
 
+  function updateEnemy() {
+    if (inp.up()) {
+      player2.accelerate();
+    }
+
+    if (inp.left()) {
+      player2.turnRight();
+    }
+
+    if (inp.right()) {
+      player2.turnLeft();
+    }
+
+    if (inp.fire()) {
+      player2.fire();
+    }
+
+    player2.update();
+  }
+
   function render() {
     renderer.render(scene, camera);
   }
 
+  function resume(){
+    pause = false;
+  }
+
+  function showOptions(){
+    $('#game').css('opacity', '.2');
+    $('.ingameOptions').html(gSettingsTmpl());
+    $('.ingameOptions').css({display: 'block', opacity: '1'});
+  }
+
   return {
     init:  init,
-    start: animate
+    start: animate,
+    stop: stop,
+    resume: resume
   };
 
 });
