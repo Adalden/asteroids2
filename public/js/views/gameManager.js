@@ -33,7 +33,7 @@ define([
         fx:      undefined,
         music:   "Off",
         effects: "On",
-        p1Controls: [38, 37, 39, 20],
+        p1Controls: [38, 37, 39, 32],
         p2Controls: [87, 65, 68, 70],
         arrows: ['Uarrow', 'Larrow', 'Rarrow', 'Darrow'],
         ctrlChange: undefined,
