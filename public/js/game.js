@@ -33,11 +33,18 @@ define([
     , pause       = false
     , player2Flag = false;
 
+  var asteroidWorker
+    , playerWorker
+    , player2Worker
+    , bulletsWorker;
+
   function init(options) {
     WIDTH  = options.WIDTH  || 1440;
     HEIGHT = options.HEIGHT || 700;
 
     shared.init(options);
+
+    createWebWorkers();
 
     var NEAR       = 0.1
       , FAR        = 10000;
@@ -59,6 +66,25 @@ define([
     bulletsManager.init(options);
 
     addShip();
+  }
+
+  function createWebWorkers() {
+    asteroidWorker = new Worker('/js/workers/asteroid.js');
+    asteroidWorker.onmessage = function (event) {
+      asteroidsManager.update(event.data);
+    };
+
+    playerWorker = new Worker('/js/workers/asteroid.js');
+    playerWorker.onmessage = function (event) {
+      player.update(event.data[0]);
+    };
+
+    player2Worker = new Worker('/js/workers/asteroid.js');
+    player2Worker.onmessage = function (event) {
+      player2.update(event.data[0]);
+    };
+
+    // bulletsWorker = new Worker();
   }
 
   function addShip(_model){
@@ -126,13 +152,18 @@ define([
     if(gameFlag){
       requestAnimationFrame(animate);
       if(!pause){
-        asteroidsManager.update();
-        bulletsManager.update();
-        bulletsManager.checkCollisions(asteroidsManager);
+        asteroidWorker.postMessage(asteroidsManager.getAsteroidData());
         updatePlayer();
-        if(player2Flag){
+        playerWorker.postMessage(player.getPlayerData());
+        if (player2Flag) {
           updatePlayer2();
+          player2Worker.postMessage(player2.getPlayerData());
         }
+
+        bulletsManager.update();
+        setTimeout(function () {
+          bulletsManager.checkCollisions(asteroidsManager);
+        }, 10);
         render();
       }
     }
@@ -162,8 +193,6 @@ define([
     if (inp.fire()) {
       player.fire();
     }
-
-    player.update();
   }
 
   function updatePlayer2() {
@@ -186,9 +215,6 @@ define([
     if (inp2.fire()) {
       player2.fire();
     }
-
-    if(player2Flag)
-      player2.update();
   }
 
   function render() {

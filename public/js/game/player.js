@@ -45,21 +45,31 @@ define([], function () {
     if (velocity.dy < -MAX_SPEED) velocity.dy = -MAX_SPEED;
   }
 
-  function update() {
-    if (!meshes[0]) return;
-    meshes[0].position.x += velocity.dx;
-    meshes[0].position.y += velocity.dy;
+  function update(data) {
+    meshes[0].position.x = data.x;
+    meshes[0].position.y = data.y;
 
-    if (meshes[0].position.x >= WIDTH / 2)   meshes[0].position.x -= WIDTH;
-    if (meshes[0].position.x <= -WIDTH / 2)  meshes[0].position.x += WIDTH;
-    if (meshes[0].position.y >= HEIGHT / 2)  meshes[0].position.y -= HEIGHT;
-    if (meshes[0].position.y <= -HEIGHT / 2) meshes[0].position.y += HEIGHT;
-
-    updateFourMeshes(meshes);
+    for (var j = 0; j < 3; ++j) {
+      meshes[j + 1].position.x = data.meshes[j].x;
+      meshes[j + 1].position.y = data.meshes[j].y;
+    }
   }
 
   function fire() {
     addBullet(meshes[0].position.x, meshes[0].position.y, meshes[0].rotation.y);
+  }
+
+  function getPlayerData() {
+    return [{
+      x:     meshes[0].position.x,
+      y:     meshes[0].position.y,
+      rotx:  meshes[0].rotation.x,
+      roty:  meshes[0].rotation.y,
+      dx:    velocity.dx,
+      dy:    velocity.dy,
+      drotx: 0,
+      droty: 0
+    }];
   }
 
   return {
@@ -68,6 +78,7 @@ define([], function () {
     accelerate: accelerate,
     fire:       fire,
     update:     update,
-    init:       init
+    init:       init,
+    getPlayerData: getPlayerData
   };
 });
