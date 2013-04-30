@@ -95,10 +95,10 @@ define([
   }
 
   function addShip(_model){
-    var mesh  = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
-    var mesh2 = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
-    var mesh3 = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
-    var mesh4 = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
+    var mesh  = new THREE.Mesh(player1model.geometry, player1model.material);
+    var mesh2 = new THREE.Mesh(player1model.geometry, player1model.material);
+    var mesh3 = new THREE.Mesh(player1model.geometry, player1model.material);
+    var mesh4 = new THREE.Mesh(player1model.geometry, player1model.material);
 
     mesh.position.x = mesh.position.y = mesh.position.z = 0;
     mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
@@ -128,10 +128,10 @@ define([
   }
 
   function addShip2(_model){
-    var mesh  = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
-    var mesh2 = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
-    var mesh3 = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
-    var mesh4 = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
+    var mesh  = new THREE.Mesh(player2model.geometry, player2model.material);
+    var mesh2 = new THREE.Mesh(player2model.geometry, player2model.material);
+    var mesh3 = new THREE.Mesh(player2model.geometry, player2model.material);
+    var mesh4 = new THREE.Mesh(player2model.geometry, player2model.material);
 
     mesh.position.x = mesh.position.y = mesh.position.z = 0;
     mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
