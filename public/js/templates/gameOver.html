@@ -1,0 +1,10 @@
+{{#if player}}
+    <div class = 'text' style = 'text-align: center;'>Congratulations {{player}}!</div>
+    <div class = 'text' style = 'text-align: center;'>New High Score</div>
+    <div class = 'text newHS' style = 'text-align: center;'>{{score}}</div>
+    <span class = 'text' style = 'margin-left: 25%;'>Name: </span><input type = 'text' class = 'name'>
+    <div class = 'button saveHS'>Save</div>
+{{else}}
+    <div class = 'text' style = 'text-align: center;'>Game Over</div>
+    <div class = 'button gBack'>Main Menu</div>
+{{/if}}

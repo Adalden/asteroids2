@@ -14,6 +14,9 @@ define([], function () {
     dy: 0
   };
 
+  var invincible = false
+  ,   timer      = 0;
+
   function init(options) {
     WIDTH  = options.WIDTH  || 1440;
     HEIGHT = options.HEIGHT || 700;
@@ -56,7 +59,11 @@ define([], function () {
   }
 
   function fire() {
-    addBullet(meshes[0].position.x, meshes[0].position.y, meshes[0].rotation.y);
+    addBullet(meshes[0].position.x, meshes[0].position.y, meshes[0].rotation.y, 2);
+  }
+
+  function get(){
+    return meshes[0];
   }
 
   function getPlayerData() {
@@ -72,6 +79,19 @@ define([], function () {
     }];
   }
 
+  function addTime(){
+    timer += 10;
+    if(timer > 2000){
+      invincible = false;
+      timer = 0;
+      $('.death').css('display', 'none');
+    }
+  }
+
+  function resetPos(){
+    meshes[0].position.x = meshes[0].position.y = velocity.dx = velocity.dy = 0;
+  }
+
   return {
     turnLeft:   turnLeft,
     turnRight:  turnRight,
@@ -79,6 +99,10 @@ define([], function () {
     fire:       fire,
     update:     update,
     init:       init,
-    getPlayerData: getPlayerData
+    get:        get,
+    getPlayerData: getPlayerData,
+    getInvincible: function(){return invincible;},
+    setInvincible: function(){invincible = true; resetPos()},
+    addTime:    addTime
   };
 });

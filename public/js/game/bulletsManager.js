@@ -49,7 +49,7 @@ define([
     bullets.splice(i, 1);
   }
 
-  function addBullet(x, y, rot) {
+  function addBullet(x, y, rot, playerNum) {
     var mesh  = new THREE.Mesh(bulletModel.geometry); // new THREE.MeshFaceMaterial(materials)
 
     mesh.position.x = x + Math.sin(rot) * 40;
@@ -62,10 +62,11 @@ define([
     scene.add(mesh);
 
     bullets.push({
-      dx:    Math.sin(rot) * BULLET_SPEED,
-      dy:    Math.cos(rot) * BULLET_SPEED,
-      life:  1000,
-      mesh:  mesh
+      dx:       Math.sin(rot) * BULLET_SPEED,
+      dy:       Math.cos(rot) * BULLET_SPEED,
+      life:     1000,
+      mesh:     mesh,
+      playerNum:playerNum
     });
   }
 
