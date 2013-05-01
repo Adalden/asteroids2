@@ -76,7 +76,7 @@ define([
     asteroidsManager.init(options);
     bulletsManager.init(options);
 
-    addShip();
+    addShip(player, player1model, ship);
   }
 
   function createWebWorkers() {
@@ -101,11 +101,11 @@ define([
     };
   }
 
-  function addShip(_model){
-    var mesh  = new THREE.Mesh(player1model.geometry, player1model.material);
-    var mesh2 = new THREE.Mesh(player1model.geometry, player1model.material);
-    var mesh3 = new THREE.Mesh(player1model.geometry, player1model.material);
-    var mesh4 = new THREE.Mesh(player1model.geometry, player1model.material);
+  function addShip(thePlayer, theModel, theGlobal){
+    var mesh  = new THREE.Mesh(theModel.geometry, theModel.material);
+    var mesh2 = new THREE.Mesh(theModel.geometry, theModel.material);
+    var mesh3 = new THREE.Mesh(theModel.geometry, theModel.material);
+    var mesh4 = new THREE.Mesh(theModel.geometry, theModel.material);
 
     mesh.position.x = mesh.position.y = mesh.position.z = 0;
     mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
@@ -121,10 +121,10 @@ define([
     scene.add(mesh2);
     scene.add(mesh3);
     scene.add(mesh4);
-    ship = mesh;
+    theGlobal = mesh;
 
-    player.init({
-      meshes:           [ship, mesh2, mesh3, mesh4],
+    thePlayer.init({
+      meshes:           [mesh, mesh2, mesh3, mesh4],
       updateFourMeshes: shared.updateFourMeshes,
       addBullet:        addBullet,
       invincible:       false
@@ -135,45 +135,17 @@ define([
     bulletsManager.addBullet(x, y, rot, playerNum);
   }
 
-  function addShip2(_model){
-    var mesh  = new THREE.Mesh(player2model.geometry, player2model.material);
-    var mesh2 = new THREE.Mesh(player2model.geometry, player2model.material);
-    var mesh3 = new THREE.Mesh(player2model.geometry, player2model.material);
-    var mesh4 = new THREE.Mesh(player2model.geometry, player2model.material);
-
-    mesh.position.x = mesh.position.y = mesh.position.z = 0;
-    mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
-    mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
-
-    mesh.position.z = -100;
-    mesh.rotation.x = 90;
-
-    mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
-    mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
-
-    scene.add(mesh);
-    scene.add(mesh2);
-    scene.add(mesh3);
-    scene.add(mesh4);
-    enemy = mesh;
-    player2.init({
-      meshes:           [enemy, mesh2, mesh3, mesh4],
-      updateFourMeshes: shared.updateFourMeshes,
-      addBullet:        addBullet
-    });
-  }
-
   function animate() {
     if(gameFlag){
       requestAnimationFrame(animate);
       if(!pause){
         asteroidWorker.postMessage(asteroidsManager.getAsteroidData());
         if(player1Flag){
-          updatePlayer();
+          updatePlayer(inp, player, '.p1');
           playerWorker.postMessage(player.getPlayerData());
         }
         if(player2Flag){
-          updatePlayer2();
+          updatePlayer(inp2, player2, '.p2');
           player2Worker.postMessage(player2.getPlayerData());
         }
         isGameOver();
@@ -191,58 +163,32 @@ define([
     gameFlag = false;
   }
 
-  function updatePlayer() {
-    if(inp.pause()){
+  function updatePlayer(theInput, thePlayer, theExtension) {
+    if(theInput.pause()){
       pause = true;
       showOptions();
     }
-    if (inp.up()) {
-      player.accelerate();
+    if (theInput.up()) {
+      thePlayer.accelerate();
     }
 
-    if (inp.left()) {
-      player.turnLeft();
+    if (theInput.left()) {
+      thePlayer.turnLeft();
     }
 
-    if (inp.right()) {
-      player.turnRight();
+    if (theInput.right()) {
+      thePlayer.turnRight();
     }
 
-    if (inp.fire()) {
-      player.fire();
+    if (theInput.fire()) {
+      thePlayer.fire();
     }
-    if(player.getInvincible())
-      player.addTime();
+    if(thePlayer.getInvincible())
+      thePlayer.addTime();
     else
-      checkPlayerCollsion(player, ".p1");
+      checkPlayerCollsion(thePlayer, theExtension);
   }
 
-  function updatePlayer2() {
-    if(inp2.pause()){
-      pause = true;
-      showOptions();
-    }
-    if (inp2.up()) {
-      player2.accelerate();
-    }
-
-    if (inp2.left()) {
-      player2.turnLeft();
-    }
-
-    if (inp2.right()) {
-      player2.turnRight();
-    }
-
-    if (inp2.fire()) {
-      player2.fire();
-    }
-    if(player2.getInvincible())
-      player2.addTime();
-    else
-      checkPlayerCollsion(player2, ".p2");
-  }
-  
   function checkPlayerCollsion(shipObj, playerStr){
     if (asteroidsManager.checkShip(shipObj.get())){
       $('.death').css('display', 'block');
@@ -291,7 +237,7 @@ define([
   function start(playerOption, p1Controls, p2Controls){
     inp.set(p1Controls);
     inp2.set(p2Controls);
-    
+
     //One Player
     if(playerOption == 1){
       player2Flag = false;
@@ -300,7 +246,7 @@ define([
 
     //Two Players
     if(playerOption == 2){
-      addShip2();
+      addShip(player2, player2model, enemy);
       $('.p2').css('display', 'block');
       player.setInvincible();
       player2.setInvincible();
@@ -310,7 +256,7 @@ define([
     if(playerOption == 3){
       player.setInvincible();
       player2.setInvincible();
-      addShip2();
+      addShip(player2, player2model, enemy);
     }
 
     animate();
@@ -322,7 +268,7 @@ define([
       $('#game').css('opacity', '.1');
       $('.gameOver').css('display', 'block');
       $('.death').css('display', 'none');
-      
+
       var scores = asteroidsManager.getScores();
       if(hsManager.check(scores.p1)){
         $('.gameOver').html(gameOverTmpl({player: "Player 1", score: scores.p1}));

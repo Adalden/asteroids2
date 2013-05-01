@@ -28,10 +28,10 @@ require([
 ) {
   // setup all the models
   var models = {
-    bullet:   { url: 'models/bullet.js'   },
-    asteroid: { url: 'models/asteroid.js' },
-    player:   { url: 'models/ship.js'     },
-    player2:  { url: 'models/enemy.js'    }
+    bullet:   { url: 'models/bullet.js',   hasFour: false },
+    asteroid: { url: 'models/asteroid.js', hasFour: true  },
+    player:   { url: 'models/ship.js',     hasFour: true  },
+    player2:  { url: 'models/enemy.js',    hasFour: true  }
   };
 
   // load the models
