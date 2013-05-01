@@ -5,6 +5,7 @@ define([
   'game/asteroidsManager',
   'game/bulletsManager',
   'game/shared',
+  'game/particles',
   'game/enemy',
   'game/highScores',
   'tmpl!templates/inGame',
@@ -16,6 +17,7 @@ define([
   asteroidsManager,
   bulletsManager,
   shared,
+  particles,
   player2,
   hsManager,
   gSettingsTmpl,
@@ -151,6 +153,8 @@ define([
         isGameOver();
         bulletsWorker.postMessage(bulletsManager.getBulletData());
 
+        particles.update();
+
         setTimeout(function () {
           bulletsManager.checkCollisions(asteroidsManager);
         }, 10);
@@ -182,6 +186,7 @@ define([
 
     if (theInput.fire()) {
       thePlayer.fire();
+      particles.create(scene);
     }
     if(thePlayer.getInvincible())
       thePlayer.addTime();
