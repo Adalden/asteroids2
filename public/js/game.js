@@ -35,6 +35,8 @@ define([
     , ship
     , enemy;
 
+  var sounds = {};
+
   var gameFlag    = false
     , pause       = false
     , player1Flag = true
@@ -47,12 +49,18 @@ define([
     , player2Worker
     , bulletsWorker;
 
+  function createSounds() {
+    sounds.fire = new Howl({ urls: ['./snd/fire.mp3'] });
+    sounds.explode = new Howl({ urls: ['./snd/explode.mp3'] });
+    sounds.gameOver = new Howl({ urls: ['./snd/notinmyhouse.mp3'] });
+  }
+
   function init(options) {
     WIDTH  = options.WIDTH  || 1440;
     HEIGHT = options.HEIGHT || 700;
 
+    createSounds();
     shared.init(options);
-
     createWebWorkers();
 
     var NEAR       = 0.1
@@ -75,6 +83,7 @@ define([
     gameFlag = true;
 
     options.scene = scene;
+    particles.init(scene);
     asteroidsManager.init(options);
     bulletsManager.init(options);
 
@@ -186,16 +195,21 @@ define([
 
     if (theInput.fire()) {
       thePlayer.fire();
-      particles.create(scene);
+      sounds.fire.play();
     }
     if(thePlayer.getInvincible())
       thePlayer.addTime();
     else
-      checkPlayerCollsion(thePlayer, theExtension);
+      checkPlayerCollision(thePlayer, theExtension);
   }
 
-  function checkPlayerCollsion(shipObj, playerStr){
-    if (asteroidsManager.checkShip(shipObj.get())){
+  function checkPlayerCollision(shipObj, playerStr){
+    var mahShip = shipObj.get();
+
+    if (asteroidsManager.checkShip(mahShip)){
+      particles.create(mahShip.position.x, mahShip.position.y);
+      sounds.explode.play();
+
       $('.death').css('display', 'block');
       if(playerStr == ".p1"){
         if(p1Lives > 0){
@@ -204,7 +218,7 @@ define([
         }
         if(p1Lives <= 0){
           player1Flag = false;
-          scene.remove(shipObj.get());
+          scene.remove(mahShip);
         }
         $('.p1.lives').html("Lives: " + p1Lives);
       }
@@ -215,7 +229,7 @@ define([
         }
         if(p2Lives <= 0){
           player2Flag = false;
-          scene.remove(shipObj.get());
+          scene.remove(mahShip);
         }
         $('.p2.lives').html("Lives: " + p2Lives);
       }
@@ -234,7 +248,6 @@ define([
   }
 
   function showOptions(){
-    $('#game').css('opacity', '.1');
     $('.ingameOptions').html(gSettingsTmpl());
     $('.ingameOptions').css({display: 'block', opacity: '1'});
   }
@@ -270,6 +283,10 @@ define([
   function isGameOver(){
     if(player1Flag == false && player2Flag == false){
       gameFlag = false;
+      setTimeout(function () {
+        sounds.gameOver.play();
+      }, 1000);
+
       $('#game').css('opacity', '.1');
       $('.gameOver').css('display', 'block');
       $('.death').css('display', 'none');
