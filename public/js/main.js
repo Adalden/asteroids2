@@ -1,74 +1,75 @@
 /*global console, require */
 
 require.config({
-    paths: {
-        'jquery':     'lib/jquery',
-        'underscore': 'lib/underscore',
-        'backbone':   'lib/backbone',
-        'tmpl':       'lib/tmpl'
+  paths: {
+    jquery:     'lib/jquery',
+    underscore: 'lib/underscore',
+    backbone:   'lib/backbone',
+    tmpl:       'lib/tmpl'
+  },
+  shim: {
+    jquery: {
+      deps:    [],
+      exports: '$'
     },
-
-    shim: {
-        'jquery': {
-            deps: [],
-            exports: '$'
-        },
-
-        'backbone': {
-            deps: ['underscore', 'jquery'],
-            exports: 'Backbone'
-        }
+    backbone: {
+      deps:    ['underscore', 'jquery'],
+      exports: 'Backbone'
     }
+  }
 });
 
 require([
-    'jquery',
-    'views/gameManager',
+  'jquery',
+  'views/gameManager',
 ], function (
-    $,
-    mainMenu
+  $,
+  mainMenu
 ) {
-    // LOAD ALL THE MODELS
-    var models = {
-        bullet:   {},
-        asteroid: {},
-        player:   {},
-        player2:  {}
-    };
+  // setup all the models
+  var models = {
+    bullet:   { url: 'models/bullet.js',   hasFour: false },
+    asteroid: { url: 'models/asteroid.js', hasFour: true  },
+    player:   { url: 'models/ship.js',     hasFour: true  },
+    player2:  { url: 'models/enemy.js',    hasFour: true  }
+  };
 
-    var count = 4;
-
-    var loader = new THREE.JSONLoader(false);
-
-    loader.load('models/bullet.js', function (geometry, materials) {
-        models.bullet.geometry = geometry;
-        loadedModel();
-    });
-
-    loader.load('models/asteroid.js', function (geometry, materials) {
-        models.asteroid.geometry = geometry;
-        loadedModel();
-    });
-
-    loader.load('models/ship.js', function (geometry, materials) {
-        models.player.geometry = geometry;
-        loadedModel();
-    });
-
-    loader.load('models/enemy.js', function (geometry, materials) {
-        models.player2.geometry = geometry;
-        loadedModel();
-    });
-
-    models.asteroid.material = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/asteroid.jpg') });
-
-    function loadedModel() {
-        count--;
-        if (count <= 0) {
-            var main = new mainMenu();
-            main.setModels(models);
-            main.initGame();
-            $('.wrapper').html(main.render().el);
-        }
-    }
+  // load the models
+  loadModels(models, function () {
+    var main = new mainMenu();
+    main.setModels(models);
+    main.initGame();
+    $('.wrapper').html(main.render().el);
+  });
 });
+
+
+// helper function
+function loadModels(models, cb) {
+  var loader = new THREE.JSONLoader(false);
+
+  // set the count
+  var count = 1;
+  for (var key in models) ++count;
+
+  // load all the models
+  for (var key in models) {
+    (function (myModel) {
+      loader.load(myModel.url, function (geometry, materials) {
+        myModel.geometry = geometry;
+        done();
+      });
+    }(models[key]));
+  }
+
+  // load all the materials
+  models.asteroid.material = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/asteroid.jpg') });
+  models.player.material   = new THREE.MeshLambertMaterial({ color: 0x000077 });
+  models.player2.material  = new THREE.MeshLambertMaterial({ color: 0x770000 });
+  done();
+
+  // provide async capability
+  function done() {
+    if (--count === 0) cb();
+  }
+}

@@ -7,7 +7,6 @@ define([
     'tmpl!templates/set',
     'tmpl!templates/gSound',
     'tmpl!templates/inGame',
-    'lib/howler',
     'game/highScores',
     'game'
 ], function (
@@ -19,7 +18,6 @@ define([
     setTmpl,
     gSoundTmpl,
     gSettingsTmpl,
-    howler,
     hsManager,
     game
 ) {
@@ -77,8 +75,7 @@ define([
         },
 
         showOptions: function(){
-            $('.menuWrapper').css('opacity', '.3');
-            $('.playerCount').css('display', 'block');
+            $('.playerCountOverlay').css('display', 'block');
         },
 
         highScores: function(){

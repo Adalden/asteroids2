@@ -5,6 +5,7 @@ define([
   'game/asteroidsManager',
   'game/bulletsManager',
   'game/shared',
+  'game/particles',
   'game/enemy',
   'game/highScores',
   'tmpl!templates/inGame',
@@ -16,6 +17,7 @@ define([
   asteroidsManager,
   bulletsManager,
   shared,
+  particles,
   player2,
   hsManager,
   gSettingsTmpl,
@@ -33,6 +35,8 @@ define([
     , ship
     , enemy;
 
+  var sounds = {};
+
   var gameFlag    = false
     , pause       = false
     , player1Flag = true
@@ -45,12 +49,18 @@ define([
     , player2Worker
     , bulletsWorker;
 
+  function createSounds() {
+    sounds.fire = new Howl({ urls: ['./snd/fire.mp3'] });
+    sounds.explode = new Howl({ urls: ['./snd/explode.mp3'] });
+    sounds.gameOver = new Howl({ urls: ['./snd/notinmyhouse.mp3'] });
+  }
+
   function init(options) {
     WIDTH  = options.WIDTH  || 1440;
     HEIGHT = options.HEIGHT || 700;
 
+    createSounds();
     shared.init(options);
-
     createWebWorkers();
 
     var NEAR       = 0.1
@@ -73,10 +83,11 @@ define([
     gameFlag = true;
 
     options.scene = scene;
+    particles.init(scene);
     asteroidsManager.init(options);
     bulletsManager.init(options);
 
-    addShip();
+    addShip(player, player1model, ship);
   }
 
   function createWebWorkers() {
@@ -101,11 +112,11 @@ define([
     };
   }
 
-  function addShip(_model){
-    var mesh  = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
-    var mesh2 = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
-    var mesh3 = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
-    var mesh4 = new THREE.Mesh(player1model.geometry, new THREE.MeshLambertMaterial({ color: 0x000077 }));
+  function addShip(thePlayer, theModel, theGlobal){
+    var mesh  = new THREE.Mesh(theModel.geometry, theModel.material);
+    var mesh2 = new THREE.Mesh(theModel.geometry, theModel.material);
+    var mesh3 = new THREE.Mesh(theModel.geometry, theModel.material);
+    var mesh4 = new THREE.Mesh(theModel.geometry, theModel.material);
 
     mesh.position.x = mesh.position.y = mesh.position.z = 0;
     mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
@@ -121,10 +132,10 @@ define([
     scene.add(mesh2);
     scene.add(mesh3);
     scene.add(mesh4);
-    ship = mesh;
+    theGlobal = mesh;
 
-    player.init({
-      meshes:           [ship, mesh2, mesh3, mesh4],
+    thePlayer.init({
+      meshes:           [mesh, mesh2, mesh3, mesh4],
       updateFourMeshes: shared.updateFourMeshes,
       addBullet:        addBullet,
       invincible:       false
@@ -135,49 +146,23 @@ define([
     bulletsManager.addBullet(x, y, rot, playerNum);
   }
 
-  function addShip2(_model){
-    var mesh  = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
-    var mesh2 = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
-    var mesh3 = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
-    var mesh4 = new THREE.Mesh(player2model.geometry, new THREE.MeshLambertMaterial({ color: 0x770000 }));
-
-    mesh.position.x = mesh.position.y = mesh.position.z = 0;
-    mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
-    mesh.scale.x    = mesh.scale.y    = mesh.scale.z    = 1;
-
-    mesh.position.z = -100;
-    mesh.rotation.x = 90;
-
-    mesh2.rotation = mesh3.rotation = mesh4.rotation = mesh.rotation;
-    mesh2.scale    = mesh3.scale    = mesh4.scale    = mesh.scale;
-
-    scene.add(mesh);
-    scene.add(mesh2);
-    scene.add(mesh3);
-    scene.add(mesh4);
-    enemy = mesh;
-    player2.init({
-      meshes:           [enemy, mesh2, mesh3, mesh4],
-      updateFourMeshes: shared.updateFourMeshes,
-      addBullet:        addBullet
-    });
-  }
-
   function animate() {
     if(gameFlag){
       requestAnimationFrame(animate);
       if(!pause){
         asteroidWorker.postMessage(asteroidsManager.getAsteroidData());
         if(player1Flag){
-          updatePlayer();
+          updatePlayer(inp, player, '.p1');
           playerWorker.postMessage(player.getPlayerData());
         }
         if(player2Flag){
-          updatePlayer2();
+          updatePlayer(inp2, player2, '.p2');
           player2Worker.postMessage(player2.getPlayerData());
         }
         isGameOver();
         bulletsWorker.postMessage(bulletsManager.getBulletData());
+
+        particles.update();
 
         setTimeout(function () {
           bulletsManager.checkCollisions(asteroidsManager);
@@ -191,60 +176,40 @@ define([
     gameFlag = false;
   }
 
-  function updatePlayer() {
-    if(inp.pause()){
+  function updatePlayer(theInput, thePlayer, theExtension) {
+    if(theInput.pause()){
       pause = true;
       showOptions();
     }
-    if (inp.up()) {
-      player.accelerate();
+    if (theInput.up()) {
+      thePlayer.accelerate();
     }
 
-    if (inp.left()) {
-      player.turnLeft();
+    if (theInput.left()) {
+      thePlayer.turnLeft();
     }
 
-    if (inp.right()) {
-      player.turnRight();
+    if (theInput.right()) {
+      thePlayer.turnRight();
     }
 
-    if (inp.fire()) {
-      player.fire();
+    if (theInput.fire()) {
+      thePlayer.fire();
+      sounds.fire.play();
     }
-    if(player.getInvincible())
-      player.addTime();
+    if(thePlayer.getInvincible())
+      thePlayer.addTime();
     else
-      checkPlayerCollsion(player, ".p1");
+      checkPlayerCollision(thePlayer, theExtension);
   }
 
-  function updatePlayer2() {
-    if(inp2.pause()){
-      pause = true;
-      showOptions();
-    }
-    if (inp2.up()) {
-      player2.accelerate();
-    }
+  function checkPlayerCollision(shipObj, playerStr){
+    var mahShip = shipObj.get();
 
-    if (inp2.left()) {
-      player2.turnLeft();
-    }
+    if (asteroidsManager.checkShip(mahShip)){
+      particles.create(mahShip.position.x, mahShip.position.y);
+      sounds.explode.play();
 
-    if (inp2.right()) {
-      player2.turnRight();
-    }
-
-    if (inp2.fire()) {
-      player2.fire();
-    }
-    if(player2.getInvincible())
-      player2.addTime();
-    else
-      checkPlayerCollsion(player2, ".p2");
-  }
-  
-  function checkPlayerCollsion(shipObj, playerStr){
-    if (asteroidsManager.checkShip(shipObj.get())){
       $('.death').css('display', 'block');
       if(playerStr == ".p1"){
         if(p1Lives > 0){
@@ -253,7 +218,7 @@ define([
         }
         if(p1Lives <= 0){
           player1Flag = false;
-          scene.remove(shipObj.get());
+          scene.remove(mahShip);
         }
         $('.p1.lives').html("Lives: " + p1Lives);
       }
@@ -264,7 +229,7 @@ define([
         }
         if(p2Lives <= 0){
           player2Flag = false;
-          scene.remove(shipObj.get());
+          scene.remove(mahShip);
         }
         $('.p2.lives').html("Lives: " + p2Lives);
       }
@@ -283,7 +248,6 @@ define([
   }
 
   function showOptions(){
-    $('#game').css('opacity', '.1');
     $('.ingameOptions').html(gSettingsTmpl());
     $('.ingameOptions').css({display: 'block', opacity: '1'});
   }
@@ -291,7 +255,7 @@ define([
   function start(playerOption, p1Controls, p2Controls){
     inp.set(p1Controls);
     inp2.set(p2Controls);
-    
+
     //One Player
     if(playerOption == 1){
       player2Flag = false;
@@ -300,7 +264,7 @@ define([
 
     //Two Players
     if(playerOption == 2){
-      addShip2();
+      addShip(player2, player2model, enemy);
       $('.p2').css('display', 'block');
       player.setInvincible();
       player2.setInvincible();
@@ -310,7 +274,7 @@ define([
     if(playerOption == 3){
       player.setInvincible();
       player2.setInvincible();
-      addShip2();
+      addShip(player2, player2model, enemy);
     }
 
     animate();
@@ -319,10 +283,14 @@ define([
   function isGameOver(){
     if(player1Flag == false && player2Flag == false){
       gameFlag = false;
+      setTimeout(function () {
+        sounds.gameOver.play();
+      }, 1000);
+
       $('#game').css('opacity', '.1');
       $('.gameOver').css('display', 'block');
       $('.death').css('display', 'none');
-      
+
       var scores = asteroidsManager.getScores();
       if(hsManager.check(scores.p1)){
         $('.gameOver').html(gameOverTmpl({player: "Player 1", score: scores.p1}));

@@ -1,6 +1,6 @@
 /*jshint node:true */
 
-var PORT = process.env.PORT || process.argv[2] || 80,
+var PORT = process.env.PORT || process.argv[2] || 3000,
     HOST = process.env.IP;
 
 var http = require('http'),
