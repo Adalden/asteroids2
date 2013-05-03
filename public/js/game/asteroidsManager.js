@@ -31,9 +31,9 @@ define([
   function nextLevel(){
     if(level <= 12)
       ++level;
-    
+
     $('.level').html('Level: ' + level);
-    
+
     if(level % 2 != 0 && level < 12)
       ++NUM_ASTEROIDS;
 
@@ -149,8 +149,10 @@ define([
 
     asteroids[i].meshes[0].scale.x = asteroids[i].meshes[0].scale.y = asteroids[i].meshes[0].scale.z = newScale;
 
-    asteroids[i].dx = (Math.random() - .5) * SPEED;
-    asteroids[i].dy = (Math.random() - .5) * SPEED;
+    var speed = SPEED * 4 - newScale / 10;
+
+    asteroids[i].dx = (Math.random() - .5) * speed;
+    asteroids[i].dy = (Math.random() - .5) * speed;
 
     createAsteroid(asteroids[i].meshes[0].position.x, asteroids[i].meshes[0].position.y, newScale);
   }

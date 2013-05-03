@@ -58,6 +58,7 @@ define([
     sounds.explode  = new Howl({ urls: ['./snd/explode.mp3'] });
     sounds.gameOver = new Howl({ urls: ['./snd/notinmyhouse.mp3'] });
     sounds.asteroid = new Howl({ urls: ['./snd/asteroidBreak.mp3'] });
+    sounds.thruster = new Howl({ urls: ['./snd/thruster.mp3'] });
   }
 
   function init(options) {
