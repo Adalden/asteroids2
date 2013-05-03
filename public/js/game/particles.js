@@ -50,7 +50,7 @@ function initEffects(scene) {
   // create asteroid explosion
 
   // create propulsion
-  prop1 = createSystem(PARTICLE_COUNT / 16, 0xFFAA00, { xRange: 25, initialVelocityY: 50, maxVelocityY: 100, burnOut: .1 });
+  prop1 = createSystem(PARTICLE_COUNT / 16, 0xFFAA00, { xRange: 25, initialVelocityY: 10, maxVelocityY: 100, burnOut: .1 });
   scene.add(prop1);
   systems.push([prop1]);
 }
@@ -60,10 +60,11 @@ function createSystem(count, color, options) {
     , pMaterial = new THREE.ParticleBasicMaterial({
         color: color,
         opacity: 0,
-        size: 20,
+        size: 10,
         map: THREE.ImageUtils.loadTexture('/img/particle.png'),
         blending: THREE.AdditiveBlending,
-        transparent: true
+        transparent: true,
+        sizeAttenuation: false
       });
 
   for (var p = 0; p < count; p++) {
