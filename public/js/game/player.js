@@ -82,10 +82,10 @@ define([], function () {
 
   function addTime(){
     timer += 10;
-    if(timer % 200 == 0){
+    if (timer % 100 == 0) {
       for(var n = 0; n < meshes.length; ++n)
         meshes[n].material.opacity = visibleFlag;
-      visibleFlag *= -1;
+      visibleFlag = visibleFlag ? 0 : 1;
     }
 
     if(timer > 2000){

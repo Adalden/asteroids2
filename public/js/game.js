@@ -45,7 +45,7 @@ define([
     , pause       = false
     , player1Flag = true
     , player2Flag = true
-    , p1Lives = 3
+    , p1Lives = 30
     , p2Lives = 3;
 
   var asteroidWorker
@@ -273,7 +273,7 @@ define([
     }
 
     //Two Players
-    if ( playerOption == 2) {
+    if (playerOption == 2) {
       addShip(player2, player2model, ship2);
       $('.p2').css('display', 'block');
       player.setInvincible();

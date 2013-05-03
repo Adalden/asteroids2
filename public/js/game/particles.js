@@ -29,8 +29,8 @@ function createPropulsion(x, y, rot) {
 
 function resetPropulsion(system, x, y, rot) {
   system.material.opacity = 1;
-  system.position.x = x;
-  system.position.y = y;
+  system.position.x = x - Math.sin(rot) * 60;
+  system.position.y = y + Math.cos(rot) * 60;
   system.rotation.z = rot;
 }
 
@@ -50,7 +50,7 @@ function initEffects(scene) {
   // create asteroid explosion
 
   // create propulsion
-  prop1 = createSystem(PARTICLE_COUNT / 16, 0xFFAA00, { xRange: 50, initialVelocityY: 50, maxVelocityY: 100, burnOut: .1 });
+  prop1 = createSystem(PARTICLE_COUNT / 16, 0xFFAA00, { xRange: 25, initialVelocityY: 50, maxVelocityY: 100, burnOut: .1 });
   scene.add(prop1);
   systems.push([prop1]);
 }
@@ -76,7 +76,7 @@ function createSystem(count, color, options) {
 
     if (options.initialVelocityY) {
       particle.velocity.y = Math.random() * options.initialVelocityY;
-      particle.yLimit = options.maxVelocityY;
+      particle.yLimit = options.maxVelocityY + Math.random() * 20;
     }
 
     particles.vertices.push(particle);
