@@ -48,8 +48,26 @@ define([
     var mesh3 = new THREE.Mesh(asteroidModel.geometry.clone(), asteroidModel.material);
     var mesh4 = new THREE.Mesh(asteroidModel.geometry.clone(), asteroidModel.material);
 
-    mesh.position.x = x !== undefined ? x : (Math.random() - .5) * WIDTH;
-    mesh.position.y = y !== undefined ? y : (Math.random() - .5) * HEIGHT;
+    if (x !== undefined) {
+      mesh.position.x = x;
+    } else {
+      var safeRadius = 150;
+      mesh.position.x = safeRadius + Math.random() * (WIDTH / 2 - safeRadius)
+      mesh.position.x = Math.random() > .5 ? mesh.position.x : -mesh.position.x;
+    }
+
+    if (y !== undefined) {
+      mesh.position.y = y;
+    } else {
+      var safeRadius = 150;
+      mesh.position.y = safeRadius + Math.random() * (HEIGHT / 2 - safeRadius)
+      mesh.position.y = Math.random() > .5 ? mesh.position.y : -mesh.position.y;
+    }
+
+    console.log(mesh.position.x, mesh.position.y);
+
+    // mesh.position.x = x !== undefined ? x : (Math.random() - .5) * WIDTH;
+    // mesh.position.y = y !== undefined ? y : (Math.random() - .5) * HEIGHT;
     mesh.position.z = 0;
 
     mesh.rotation.x = mesh.rotation.y = mesh.rotation.z = 0;
