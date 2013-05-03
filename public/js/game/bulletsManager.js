@@ -35,11 +35,12 @@ define([
     }
   }
 
-  function checkCollisions(asteroidsManager) {
+  function checkCollisions(asteroidsManager, cb) {
     for (var i = 0; i < bullets.length; ++i) {
       if (asteroidsManager.checkBullet(bullets[i])) {
         destroyBullet(i);
         --i;
+        cb();
       }
     }
   }

@@ -53,6 +53,7 @@ define([
     sounds.fire     = new Howl({ urls: ['./snd/fire.mp3'] });
     sounds.explode  = new Howl({ urls: ['./snd/explode.mp3'] });
     sounds.gameOver = new Howl({ urls: ['./snd/notinmyhouse.mp3'] });
+    sounds.asteroid = new Howl({ urls: ['./snd/asteroidBreak.mp3'] });
   }
 
   function init(options) {
@@ -165,7 +166,9 @@ define([
         particles.update();
 
         setTimeout(function () {
-          bulletsManager.checkCollisions(asteroidsManager);
+          bulletsManager.checkCollisions(asteroidsManager, function () {
+            sounds.asteroid.play();
+          });
         }, 10);
         render();
       }
@@ -181,8 +184,11 @@ define([
       pause = true;
       showOptions();
     }
+
     if (theInput.up()) {
+      var theMesh = thePlayer.get();
       thePlayer.accelerate();
+      particles.createPropulsion(theMesh.position.x, theMesh.position.y, theMesh.rotation.y);
     }
 
     if (theInput.left()) {
@@ -207,7 +213,7 @@ define([
     var mahShip = shipObj.get();
 
     if (asteroidsManager.checkShip(mahShip)) {
-      particles.create(mahShip.position.x, mahShip.position.y);
+      particles.createExplosion(mahShip.position.x, mahShip.position.y);
       sounds.explode.play();
 
       $('.death').css('display', 'block');
