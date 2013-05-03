@@ -74,6 +74,10 @@ define([
     var $container = $('#game');
     renderer = new THREE.WebGLRenderer();
     camera   = new THREE.OrthographicCamera(WIDTH / 2, -WIDTH / 2, HEIGHT / 2, -HEIGHT / 2, HEIGHT / 2, NEAR, FAR);
+
+    // var VIEW_ANGLE = 45, ASPECT = WIDTH / HEIGHT;
+    // camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+
     scene    = new THREE.Scene();
 
     renderer.setSize(WIDTH, HEIGHT);

@@ -76,7 +76,7 @@ function createSystem(count, color, options) {
 
     if (options.initialVelocityY) {
       particle.velocity.y = Math.random() * options.initialVelocityY;
-      particle.yLimit = options.maxVelocityY + Math.random() * 20;
+      particle.yLimit = options.maxVelocityY + Math.random() * 50;
     }
 
     particles.vertices.push(particle);
