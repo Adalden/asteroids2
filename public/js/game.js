@@ -46,7 +46,7 @@ define([
     , player1Flag = true
     , player2Flag = true
     , p1Lives = 30
-    , p2Lives = 3;
+    , p2Lives = 30;
 
   var asteroidWorker
     , playerWorker
@@ -193,7 +193,12 @@ define([
     if (theInput.up()) {
       var theMesh = thePlayer.get();
       thePlayer.accelerate();
-      particles.createPropulsion(theMesh.position.x, theMesh.position.y, theMesh.rotation.y);
+
+      if (theExtension === '.p1')
+        particles.createPropulsion(theMesh.position.x, theMesh.position.y, theMesh.rotation.y);
+      else
+        particles.createPropulsion2(theMesh.position.x, theMesh.position.y, theMesh.rotation.y);
+
       if (!sounds.thruster.isPlaying) {
         sounds.thruster.play();
         sounds.thruster.isPlaying = true;

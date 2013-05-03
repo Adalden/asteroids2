@@ -1,10 +1,11 @@
 define([], function () {
 
   return {
-    init:             initEffects,
-    update:           updateParticles,
-    createExplosion:  createExplosion,
-    createPropulsion: createPropulsion,
+    init:              initEffects,
+    update:            updateParticles,
+    createExplosion:   createExplosion,
+    createPropulsion:  createPropulsion,
+    createPropulsion2: createPropulsion2
   };
 });
 
@@ -16,7 +17,7 @@ var systems     = [];
 var explosions      = []
   , explosionsCount = 0;
 
-var prop1;
+var prop1, prop2;
 
 function createExplosion(x, y) {
   resetExplosion(explosions[explosionsCount], x, y);
@@ -24,13 +25,17 @@ function createExplosion(x, y) {
 }
 
 function createPropulsion(x, y, rot) {
-  resetPropulsion(prop1, x, y, rot);
+  resetPropulsion(prop1, x, y, rot, 60);
 }
 
-function resetPropulsion(system, x, y, rot) {
+function createPropulsion2(x, y, rot) {
+  resetPropulsion(prop2, x, y, rot, 20);
+}
+
+function resetPropulsion(system, x, y, rot, aoeu) {
   system.material.opacity = 1;
-  system.position.x = x - Math.sin(rot) * 60;
-  system.position.y = y + Math.cos(rot) * 60;
+  system.position.x = x - Math.sin(rot) * aoeu;
+  system.position.y = y + Math.cos(rot) * aoeu;
   system.rotation.z = rot;
 }
 
@@ -53,6 +58,10 @@ function initEffects(scene) {
   prop1 = createSystem(PARTICLE_COUNT / 16, 0xFFAA00, { xRange: 25, initialVelocityY: 10, maxVelocityY: 100, burnOut: .1 });
   scene.add(prop1);
   systems.push([prop1]);
+
+  prop2 = createSystem(PARTICLE_COUNT / 16, 0xFFAA00, { xRange: 25, initialVelocityY: 10, maxVelocityY: 100, burnOut: .1 });
+  scene.add(prop2);
+  systems.push([prop2]);
 }
 
 function createSystem(count, color, options) {

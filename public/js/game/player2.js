@@ -14,8 +14,9 @@ define([], function () {
     dy: 0
   };
 
-  var invincible = false
-  ,   timer      = 0;
+  var invincible  = false
+  ,   timer       = 0
+  ,   visibleFlag = true;
 
   function init(options) {
     WIDTH  = options.WIDTH  || 1440;
@@ -81,10 +82,17 @@ define([], function () {
 
   function addTime(){
     timer += 10;
+    if (timer % 50 == 0) {
+      for(var n = 0; n < meshes.length; ++n)
+        meshes[n].material.visible = visibleFlag;
+      visibleFlag = !visibleFlag;
+    }
+
     if(timer > 2000){
       invincible = false;
       timer = 0;
-      $('.death').css('display', 'none');
+      for(var n = 0; n < meshes.length; ++n)
+        meshes[n].material.visible = true;
     }
   }
 
