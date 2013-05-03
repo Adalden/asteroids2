@@ -6,6 +6,7 @@ define([
   'game/bulletsManager',
   'game/shared',
   'game/particles',
+  'game/player2',
   'game/enemy',
   'game/highScores',
   'tmpl!templates/inGame',
@@ -19,6 +20,7 @@ define([
   shared,
   particles,
   player2,
+  enemy,
   hsManager,
   gSettingsTmpl,
   gameOverTmpl
@@ -27,13 +29,15 @@ define([
     , HEIGHT;
 
   var player1model
-    , player2model;
+    , player2model
+    , enemyModel;
 
   var renderer
     , camera
     , scene
     , ship
-    , enemy;
+    , ship2
+    , enemyShip;
 
   var sounds = {};
 
@@ -255,6 +259,7 @@ define([
   function start(playerOption, p1Controls, p2Controls) {
     inp.set(p1Controls);
     inp2.set(p2Controls);
+    addShip(enemy, enemyModel, enemyShip);
 
     //One Player
     if (playerOption == 1) {
@@ -264,7 +269,7 @@ define([
 
     //Two Players
     if ( playerOption == 2) {
-      addShip(player2, player2model, enemy);
+      addShip(player2, player2model, ship2);
       $('.p2').css('display', 'block');
       player.setInvincible();
       player2.setInvincible();
@@ -274,7 +279,7 @@ define([
     if (playerOption == 3) {
       player.setInvincible();
       player2.setInvincible();
-      addShip(player2, player2model, enemy);
+      addShip(player2, player2model, ship2);
     }
 
     animate();
@@ -304,6 +309,7 @@ define([
   function setModels(models) {
     player1model = models.player;
     player2model = models.player2;
+    enemyModel = models.enemy;
     asteroidsManager.setModels(models);
     bulletsManager.setModels(models);
   }

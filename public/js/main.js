@@ -31,7 +31,8 @@ require([
     bullet:   { url: 'models/bullet.js',   hasFour: false },
     asteroid: { url: 'models/asteroid.js', hasFour: true  },
     player:   { url: 'models/ship.js',     hasFour: true  },
-    player2:  { url: 'models/enemy.js',    hasFour: true  }
+    player2:  { url: 'models/ship2.js',    hasFour: true  },
+    enemy:    { url: 'models/enemy.js',    hasFour: true  }
   };
 
   // load the models
