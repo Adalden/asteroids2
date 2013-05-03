@@ -58,7 +58,7 @@ define([
     sounds.explode  = new Howl({ urls: ['./snd/explode.mp3'] });
     sounds.gameOver = new Howl({ urls: ['./snd/notinmyhouse.mp3'] });
     sounds.asteroid = new Howl({ urls: ['./snd/asteroidBreak.mp3'] });
-    sounds.thruster = new Howl({ urls: ['./snd/thruster.mp3'] });
+    sounds.thruster = new Howl({ urls: ['./snd/thruster.mp3'], loop: true });
   }
 
   function init(options) {
@@ -75,10 +75,6 @@ define([
     var $container = $('#game');
     renderer = new THREE.WebGLRenderer();
     camera   = new THREE.OrthographicCamera(WIDTH / 2, -WIDTH / 2, HEIGHT / 2, -HEIGHT / 2, HEIGHT / 2, NEAR, FAR);
-
-    // var VIEW_ANGLE = 45, ASPECT = WIDTH / HEIGHT;
-    // camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-
     scene    = new THREE.Scene();
 
     renderer.setSize(WIDTH, HEIGHT);
@@ -198,6 +194,13 @@ define([
       var theMesh = thePlayer.get();
       thePlayer.accelerate();
       particles.createPropulsion(theMesh.position.x, theMesh.position.y, theMesh.rotation.y);
+      if (!sounds.thruster.isPlaying) {
+        sounds.thruster.play();
+        sounds.thruster.isPlaying = true;
+      }
+    } else {
+      sounds.thruster.isPlaying = false;
+      sounds.thruster.stop();
     }
 
     if (theInput.left()) {
