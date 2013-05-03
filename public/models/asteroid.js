@@ -18,7 +18,7 @@
     "materials": [	{
 	"DbgColor" : 15658734,
 	"DbgIndex" : 0,
-	"DbgName" : "Material.001",
+	"DbgName" : "asteroid",
 	"colorAmbient" : [0.0, 0.0, 0.0],
 	"colorDiffuse" : [0.64, 0.64, 0.64],
 	"colorSpecular" : [0.0, 0.0, 0.0],
