@@ -148,7 +148,7 @@ define([
         },
 
         bindSound: function(){
-            this.sound = new Howl({urls: ['./snd/tron.mp3'],loop: true});
+            this.sound = new Howl({ urls: ['./snd/tron.mp3'], loop: true, volume: .1 });
             this.fx = new Howl({urls: ['./snd/click.mp3']});
             if(this.music == "On")
                 this.sound.play();
@@ -220,7 +220,7 @@ define([
         },
 
         resumeGame: function(){
-            $('.ingameOptions').css('display', 'none');
+            $('.ingameOptionsOverlay').css('display', 'none');
             $('#game').css('opacity', '1');
             game.resume();
         },
