@@ -220,7 +220,6 @@ define([
       particles.createExplosion(mahShip.position.x, mahShip.position.y);
       sounds.explode.play();
 
-      $('.death').css('display', 'block');
       if (playerStr == ".p1") {
         if (p1Lives > 0) {
           player.setInvincible();
