@@ -135,10 +135,12 @@ define([
             if(this.effects == "On"){
                 this.effects = "Off";
                 $('.effects').html("Sound Effects Off");
+                game.setFX(false);
             }
             else{
                 this.effects = "On";
                 $('.effects').html("Sound Effects On");
+                game.setFX(false);
             }
         },
 

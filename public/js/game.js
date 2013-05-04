@@ -39,14 +39,15 @@ define([
     , ship2
     , enemyShip;
 
-  var sounds = {};
+  var sounds = {}
+    , soundFlag = true;
 
   var gameFlag    = false
     , pause       = false
     , player1Flag = true
     , player2Flag = true
-    , p1Lives = 30
-    , p2Lives = 30;
+    , p1Lives = 3
+    , p2Lives = 3;
 
   var asteroidWorker
     , playerWorker
@@ -167,14 +168,16 @@ define([
         }
         isGameOver();
         bulletsWorker.postMessage(bulletsManager.getBulletData());
-
+        enemy.update();
         particles.update();
 
         setTimeout(function () {
           bulletsManager.checkCollisions(asteroidsManager, function () {
-            sounds.asteroid.play();
+            if(soundFlag)
+              sounds.asteroid.play();
           });
         }, 10);
+
         render();
       }
     }
@@ -199,7 +202,7 @@ define([
       else
         particles.createPropulsion2(theMesh.position.x, theMesh.position.y, theMesh.rotation.y);
 
-      if (!sounds.thruster.isPlaying) {
+      if (!sounds.thruster.isPlaying && soundFlag) {
         sounds.thruster.play();
         sounds.thruster.isPlaying = true;
       }
@@ -218,7 +221,8 @@ define([
 
     if (theInput.fire()) {
       thePlayer.fire();
-      sounds.fire.play();
+      if(soundFlag)
+        sounds.fire.play();
     }
     if (thePlayer.getInvincible())
       thePlayer.addTime();
@@ -229,9 +233,10 @@ define([
   function checkPlayerCollision(shipObj, playerStr) {
     var mahShip = shipObj.get();
 
-    if (asteroidsManager.checkShip(mahShip)) {
+    if (asteroidsManager.checkShip(mahShip) || bulletsManager.checkEnemyCollision(mahShip)) {
       particles.createExplosion(mahShip.position.x, mahShip.position.y);
-      sounds.explode.play();
+      if(soundFlag)
+        sounds.explode.play();
 
       if (playerStr == ".p1") {
         if (p1Lives > 0) {
@@ -293,13 +298,6 @@ define([
       player2.setInvincible();
     }
 
-    //Player with ally
-    if (playerOption == 3) {
-      player.setInvincible();
-      player2.setInvincible();
-      addShip(player2, player2model, ship2);
-    }
-
     animate();
   }
 
@@ -307,7 +305,8 @@ define([
     if (player1Flag == false && player2Flag == false) {
       gameFlag = false;
       setTimeout(function () {
-        sounds.gameOver.play();
+        if(soundFlag)
+          sounds.gameOver.play();
       }, 1000);
 
       $('.gameOverOverlay').css('display', 'block');
@@ -337,6 +336,7 @@ define([
     start:     start,
     stop:      stop,
     setModels: setModels,
-    resume:    resume
+    resume:    resume,
+    setFX:     function(option){soundFlag = option;}
   };
 });

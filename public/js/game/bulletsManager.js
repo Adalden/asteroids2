@@ -1,7 +1,9 @@
 define([
-  'game/shared'
+  'game/shared',
+  'game/enemy'
 ], function (
-  shared
+  shared,
+  enemy
 ) {
   var WIDTH
     , HEIGHT
@@ -45,13 +47,25 @@ define([
     }
   }
 
+  function checkEnemyCollision(player){
+    for(var n = 0; n < bullets.length; ++n){
+      if(shared.collides(bullets[n].mesh, player) && bullets[n].playerNum == 3){
+        destroyBullet(n);
+        --n;
+        return true;
+      }
+    }
+    return false;
+  }
+
   function destroyBullet(i) {
     scene.remove(bullets[i].mesh);
     bullets.splice(i, 1);
   }
 
   function addBullet(x, y, rot, playerNum) {
-    var mesh  = new THREE.Mesh(bulletModel.geometry); // new THREE.MeshFaceMaterial(materials)
+    var material   = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/bullet.jpg') });
+    var mesh  = new THREE.Mesh(bulletModel.geometry, material); // new THREE.MeshFaceMaterial(materials)
 
     mesh.position.x = x + Math.sin(rot) * 40;
     mesh.position.y = y - Math.cos(rot) * 40;
@@ -96,6 +110,7 @@ define([
     addBullet:       addBullet,
     destroyBullet:   destroyBullet,
     checkCollisions: checkCollisions,
-    getBulletData:   getBulletData
+    getBulletData:   getBulletData,
+    checkEnemyCollision: checkEnemyCollision
   };
 });

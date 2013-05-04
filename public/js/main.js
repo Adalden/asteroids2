@@ -67,6 +67,7 @@ function loadModels(models, cb) {
   models.asteroid.material = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/asteroid.jpg') });
   models.player.material   = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/c1_01_02_01_04.jpg') });
   models.player2.material  = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/c3_12.jpg') });
+  models.enemy.material    = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/_Vinyl_Gray_3.jpg') });
   done();
 
   // provide async capability
