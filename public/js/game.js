@@ -171,7 +171,8 @@ define([
         particles.update();
 
         setTimeout(function () {
-          bulletsManager.checkCollisions(asteroidsManager, function () {
+          bulletsManager.checkCollisions(asteroidsManager, function (x, y, rot) {
+            particles.createAsteroidParts(x, y, rot);
             sounds.asteroid.play();
           });
         }, 10);

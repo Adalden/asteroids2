@@ -117,12 +117,15 @@ define([
   function checkBullet(bullet) {
     for (var i = 0; i < asteroids.length; ++i) {
       if (shared.collides(asteroids[i].meshes[0], bullet.mesh)) {
+        var oldX = asteroids[i].meshes[0].position.x
+          , oldY = asteroids[i].meshes[0].position.y;
+
         updateScore(asteroids[i].meshes[0].scale.x, bullet.playerNum);
         hitAsteroid(i);
-        return true;
+        return { res: true, x: oldX, y: oldY };
       }
     }
-    return false;
+    return { res: false };
   }
 
   function updateScore(size, playerNum) {
