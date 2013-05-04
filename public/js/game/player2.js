@@ -88,7 +88,7 @@ define([], function () {
       visibleFlag = !visibleFlag;
     }
 
-    if(timer > 2000){
+    if (timer > 2000){
       invincible = false;
       timer = 0;
       for(var n = 0; n < meshes.length; ++n)

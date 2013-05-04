@@ -39,10 +39,11 @@ define([
 
   function checkCollisions(asteroidsManager, cb) {
     for (var i = 0; i < bullets.length; ++i) {
-      if (asteroidsManager.checkBullet(bullets[i])) {
+      var result = asteroidsManager.checkBullet(bullets[i]);
+      if (result.res) {
+        cb(result.x, result.y, bullets[i].mesh.rotation.z);
         destroyBullet(i);
         --i;
-        cb();
       }
     }
   }

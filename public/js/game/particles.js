@@ -1,11 +1,12 @@
 define([], function () {
 
   return {
-    init:              initEffects,
-    update:            updateParticles,
-    createExplosion:   createExplosion,
-    createPropulsion:  createPropulsion,
-    createPropulsion2: createPropulsion2
+    init:                initEffects,
+    update:              updateParticles,
+    createExplosion:     createExplosion,
+    createPropulsion:    createPropulsion,
+    createPropulsion2:   createPropulsion2,
+    createAsteroidParts: createAsteroidParts
   };
 });
 
@@ -19,6 +20,9 @@ var explosions      = []
 
 var prop1, prop2;
 
+var asteroidParts      = []
+  , asteroidPartsCount = 0;
+
 function createExplosion(x, y) {
   resetExplosion(explosions[explosionsCount], x, y);
   if (++explosionsCount >= explosions.length) explosionsCount = 0;
@@ -30,6 +34,11 @@ function createPropulsion(x, y, rot) {
 
 function createPropulsion2(x, y, rot) {
   resetPropulsion(prop2, x, y, rot, 20);
+}
+
+function createAsteroidParts(x, y, rot) {
+  resetAsteroidParts(asteroidParts[asteroidPartsCount], x, y, rot);
+  if (++asteroidPartsCount >= asteroidParts.length) asteroidPartsCount = 0;
 }
 
 function resetPropulsion(system, x, y, rot, aoeu) {
@@ -53,6 +62,12 @@ function initEffects(scene) {
   }
 
   // create asteroid explosion
+  for (var i = 0; i < 10; ++i) {
+    var system = createSystem(PARTICLE_COUNT/2, 0x00FF00, { spread: PARTICLE_SPREAD }); // RGB(130, 126, 99)
+    scene.add(system);
+    asteroidParts.push(system);
+    systems.push([system]);
+  }
 
   // create propulsion
   prop1 = createSystem(PARTICLE_COUNT / 16, 0xFFAA00, { xRange: 25, initialVelocityY: 10, maxVelocityY: 100, burnOut: .1 });
@@ -96,10 +111,40 @@ function createSystem(count, color, options) {
   particleSystem.position.z = -50;
   particleSystem.sortParticles = true;
 
-  if (options.spread)  particleSystem.spread = options.spread;
+  if (options.spread)  particleSystem.spread  = options.spread;
   if (options.burnOut) particleSystem.burnOut = options.burnOut;
 
   return particleSystem;
+}
+
+function resetAsteroidParts(system, x, y, rot) {
+  var particles = system.geometry;
+  var spread = system.spread;
+  var pCount = particles.vertices.length;
+
+  while (pCount--) {
+    var particle = particles.vertices[pCount];
+    resetParticle(particle, pCount % 2 === 0);
+  }
+
+  system.material.opacity = 1;
+  system.position.x = x;
+  system.position.y = y;
+
+  function resetParticle(particle, odd) {
+    particle.x = particle.y = 0;
+    var vel = Math.random() - .5
+
+    if (odd) {
+      var rot2 = (Math.random() - .5) * 10 + rot;
+      particle.velocity.x = vel * spread * -Math.sin(rot2);
+      particle.velocity.y = vel * spread * Math.cos(rot2);
+    } else {
+      var rot2 = (Math.random() - .5) * Math.PI/18 + rot;
+      particle.velocity.x = vel * spread * 2 * -Math.sin(rot2);
+      particle.velocity.y = vel * spread * 2 * Math.cos(rot2);
+    }
+  }
 }
 
 function resetExplosion(system, x, y) {
