@@ -98,25 +98,82 @@ define([
   }
 
   function createWebWorkers() {
-    asteroidWorker = new Worker('/js/workers/asteroid.js');
-    asteroidWorker.onmessage = function (event) {
-      asteroidsManager.update(event.data);
-    };
+    // asteroidsManager.update(event.data);
 
-    playerWorker = new Worker('/js/workers/asteroid.js');
-    playerWorker.onmessage = function (event) {
-      player.update(event.data[0]);
-    };
+    asteroidWorker = (function () {
+      var listener;
+      var myWorker = new Worker('/js/workers/asteroid.js');
+      myWorker.onmessage = function (event) {
+        if (listener) listener(event.data);
+      };
 
-    player2Worker = new Worker('/js/workers/asteroid.js');
-    player2Worker.onmessage = function (event) {
-      player2.update(event.data[0]);
-    };
+      return {
+        postMessage: function (data, cb) {
+          myWorker.postMessage(data);
+          listener = cb;
+        }
+      }
+    }());
 
-    bulletsWorker = new Worker('/js/workers/bullets.js');
-    bulletsWorker.onmessage = function (event) {
-      bulletsManager.update(event.data);
-    };
+    playerWorker = (function () {
+      var listener;
+      var myWorker = new Worker('/js/workers/asteroid.js');
+      myWorker.onmessage = function (event) {
+        if (listener) listener(event.data);
+      };
+
+      return {
+        postMessage: function (data, cb) {
+          myWorker.postMessage(data);
+          listener = cb;
+        }
+      }
+    }());
+
+    player2Worker = (function () {
+      var listener;
+      var myWorker = new Worker('/js/workers/asteroid.js');
+      myWorker.onmessage = function (event) {
+        if (listener) listener(event.data);
+      };
+
+      return {
+        postMessage: function (data, cb) {
+          myWorker.postMessage(data);
+          listener = cb;
+        }
+      }
+    }());
+
+    bulletsWorker = (function () {
+      var listener;
+      var myWorker = new Worker('/js/workers/bullets.js');
+      myWorker.onmessage = function (event) {
+        if (listener) listener(event.data);
+      };
+
+      return {
+        postMessage: function (data, cb) {
+          myWorker.postMessage(data);
+          listener = cb;
+        }
+      }
+    }());
+
+    // playerWorker = new Worker('/js/workers/asteroid.js');
+    // playerWorker.onmessage = function (event) {
+    //   player.update(event.data[0]);
+    // };
+
+    // player2Worker = new Worker('/js/workers/asteroid.js');
+    // player2Worker.onmessage = function (event) {
+    //   player2.update(event.data[0]);
+    // };
+
+    // bulletsWorker = new Worker('/js/workers/bullets.js');
+    // bulletsWorker.onmessage = function (event) {
+    //   bulletsManager.update(event.data);
+    // };
   }
 
   function addShip(thePlayer, theModel, theGlobal){
@@ -157,28 +214,49 @@ define([
     if (gameFlag) {
       requestAnimationFrame(animate);
       if (!pause) {
-        asteroidWorker.postMessage(asteroidsManager.getAsteroidData());
+        var THREADCOUNT = 2;
+        if (player1Flag) ++THREADCOUNT;
+        if (player2Flag) ++THREADCOUNT;
+
+        asteroidWorker.postMessage(asteroidsManager.getAsteroidData(), function (data) {
+          asteroidsManager.update(data);
+          done();
+        });
+
         if (player1Flag) {
           updatePlayer(inp, player, '.p1');
-          playerWorker.postMessage(player.getPlayerData());
+          playerWorker.postMessage(player.getPlayerData(), function (data) {
+            player.update(data[0]);
+            done();
+          });
         }
         if (player2Flag) {
           updatePlayer(inp2, player2, '.p2');
-          player2Worker.postMessage(player2.getPlayerData());
+          player2Worker.postMessage(player2.getPlayerData(), function (data) {
+            player2.update(data[0]);
+            done();
+          });
         }
-        isGameOver();
-        bulletsWorker.postMessage(bulletsManager.getBulletData());
+
+        bulletsWorker.postMessage(bulletsManager.getBulletData(), function (data) {
+          bulletsManager.update(data);
+          done();
+        });
+
         enemy.update();
         particles.update();
 
-        setTimeout(function () {
-          bulletsManager.checkCollisions(asteroidsManager, function (x, y, rot) {
-            particles.createAsteroidParts(x, y, rot);
-            sounds.asteroid.play();
-          });
-        }, 10);
+        isGameOver();
 
-        render();
+        function done() {
+          if (--THREADCOUNT === 0) {
+            bulletsManager.checkCollisions(asteroidsManager, function (x, y, rot) {
+              particles.createAsteroidParts(x, y, rot);
+              sounds.asteroid.play();
+            });
+            render();
+          }
+        }
       }
     }
   }
