@@ -65,8 +65,7 @@ define([
   }
 
   function addBullet(x, y, rot, playerNum) {
-    var material   = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/bullet.jpg') });
-    var mesh  = new THREE.Mesh(bulletModel.geometry, material); // new THREE.MeshFaceMaterial(materials)
+    var mesh  = new THREE.Mesh(bulletModel.geometry, bulletModel.material); // new THREE.MeshFaceMaterial(materials)
 
     mesh.position.x = x + Math.sin(rot) * 40;
     mesh.position.y = y - Math.cos(rot) * 40;

@@ -68,6 +68,7 @@ function loadModels(models, cb) {
   models.player.material   = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/c1_01_02_01_04.jpg') });
   models.player2.material  = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/c3_12.jpg') });
   models.enemy.material    = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/_Vinyl_Gray_3.jpg') });
+  models.bullet.material   = new THREE.MeshBasicMaterial({ map: THREE.ImageUtils.loadTexture('models/bullet.jpg') })
   done();
 
   // provide async capability
